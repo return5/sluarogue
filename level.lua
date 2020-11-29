@@ -5,6 +5,65 @@ ROOMS  = {}
 HEIGHT = 25
 WIDTH  = 80
 
+TILE = {x = nil, y = nil, icon=nil}
+TILE.__index = TILE
+PATH = {}
+PATH.__index = PATH
+CONNECTIONS = {}
+CONNECTIONS.__index = CONNECTIONS
+
+
+local function getStartStopXY()
+    local start   = {}
+    local stop    = {}
+    local rand    = math.random
+    local additem = table.insert
+    for i=1,ROOMS.length - 1,1 do
+        local start_x = rand(ROOMS[i].x,ROOMS[i].x + ROOMS[i].width)
+        local start_y = rand(ROOMS[i].y,ROOMS[i].y + ROOMS[i].height)
+        local stop_x = rand(ROOMS[i+1].x,ROOMS[i+1].x + ROOMS[i+1].wi+1dth)
+        local stop_y = rand(ROOMS[i+1].y,ROOMS[i+1].y + ROOMS[i+1].hei+1ght)
+        additem(start,TILE:new(start_x,start_y,"="))
+        additem(stop,TILE:new(stop_x,stop_y,"="))
+    end
+    return start,stop
+end
+
+function CONNECTIONS:new()
+    local self = setmetatable({},CONNECTIONS)
+    local start,stop = getStartStopXY()
+    local additem    = table.insert
+    for i,_ in ipairs(start) do
+        additem(self,PATH:NEW(start[i],stop[i]))
+    end
+    return self
+end
+
+local function makeNewTile(prev_x,prev_y,stop)
+
+end
+
+function PATH:new(start,stop)
+    local self = setmetatable({},PATH)
+    local additem = table.insert
+    additem(self,start)
+    local x = start.x
+    local y = start.y
+    repeat
+        x,y = makeNewTile(x,y,stop)
+        additem(self,TILE:new(x,y,"="))
+    until(x == stop.x and y == stop.y)
+    return self
+end
+
+function TITLE:new(x,y,icon)
+    local self = setmetatable({},TILE)
+    self.x     = x
+    self.y     = y
+    self.icon  = icon
+    return self
+end
+
 local function makeRoom(h,w)
     local room = {}
     local str  = string.rep("-",w)
