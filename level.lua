@@ -1,3 +1,4 @@
+local curse = require("sluacurses")
 ROOM   = {room = {}, height = nil, width = nil,x = nil,y = nil}
 ROOM.__index = ROOM
 ROOMS  = {}
@@ -36,7 +37,7 @@ local function getX(w)
 end
 
 local function getWH()
-    return math.random(3,7) 
+    return math.random(4,8) 
 end
 
 
@@ -82,13 +83,11 @@ local function addRoom()
     table.insert(ROOMS,ROOM:new(h,w,x,y))
 end
 
+local function printRoom(room) 
+    for i,str in ipairs(room.room) do
+        mvprintw(room.y + i - 1,room.x,str)
+    end
+end
+
 math.randomseed(os.time())      --seed random number generator
-
-for i=0,4,1 do
-    addRoom()
-end
-
-for _,room in ipairs(ROOMS) do
-    io.write(room.x," ",room.y," ",room.width," ",room.height,"\n")
-end
 
