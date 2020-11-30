@@ -1,5 +1,5 @@
 local curse = require("sluacurses")
-ROOM   = {room = {}, height = nil, width = nil,x = nil,y = nil}
+ROOM   = {height = nil, width = nil,x = nil,y = nil}
 ROOM.__index = ROOM
 ROOMS  = {}
 HEIGHT = 25
@@ -9,8 +9,8 @@ TILE = {x = nil, y = nil, icon=nil}
 TILE.__index = TILE
 PATH = {}
 PATH.__index = PATH
-CONNECTIONS = {}
-CONNECTIONS.__index = CONNECTIONS
+MAP = {}
+MAP.__index = MAP
 
 
 
@@ -131,28 +131,27 @@ function TILE:new(x,y,icon)
     return self
 end
 
-local function makeRoom(h,w)
-    local room = {}
-    local rep  = string.rep
-    local str  = rep("-",w)
-    local add  = table.insert
-    add(room,str)
-    for i=1,h - 1,1 do
-        str = "|" .. rep(" ",w - 2) .. "|"
-        add(room,str)
+local function addRoomToMap(x,y,h,w)
+    local long = y + h
+    local wide = x + w
+    for i=y,long,1 do
+        for j = x,wide,1 do
+            if i == y or i == long then
+                MAP[i + 1][j + 1].icon = "-"
+            elseif j == x or j == wide then
+                MAP[i + 1][j + 1].icon = "|"
+            end
+        end
     end
-    str  = rep("-",w)
-    add(room,str)
-    return room
 end
 
 function ROOM:new(height,width,x,y)
     local self   = setmetatable({},ROOM)
     self.height  = height
     self.width   = width
-    self.room    = makeRoom(height,width)
     self.x       = x
     self.y       = y
+    addRoomToMap(x,y,height,width)
     return self
 end
 
@@ -170,20 +169,20 @@ end
 
 
 local function checkY(room,y,h)
-    if y > room.y and y < (room.y + room.height) then
+    if y > room.y and y < (room.y + room.height) + 2 then
         return true
     end
-    if (y + h) > room.y and (y + h) < (room.y + room.height) then
+    if (y + h) > room.y - 2 and (y + h) < (room.y + room.height) then
         return true
     end
     return false
 end
 
 local function checkX(room,x,w)
-    if x > room.x and x  < (room.x + room.width) then
+    if x > room.x  and x  < (room.x + room.width) + 4 then
         return true
     end
-    if (x + w) > room.x and (x + w) < (room.x + room.width) then
+    if (x + w) > room.x - 4 and (x + w) < (room.x + room.width) then
         return true
     end
     return false
@@ -216,52 +215,43 @@ local function addRoom()
     table.insert(ROOMS,ROOM:new(h,w,x,y))
 end
 
-function CONNECTIONS:new()
-    local self = setmetatable({},CONNECTIONS)
-    local start,stop = getStartStopXY()
+function MAP:new()
+    local self = setmetatable({},MAP)
+    --local start,stop = getStartStopXY()
     local additem    = table.insert
-    additem(self,start)
-    additem(self,stop)
+    --additem(self,start)
+    --additem(self,stop)
     --for i,_ in ipairs(start) do
-  --      additem(self,PATH:new(start[i],stop[i]))
- --   end
+      --  additem(self,PATH:new(start[i],stop[i]))
+    --end
+    for i = 0,HEIGHT,1 do
+        local row = {}
+        for j = 0,WIDTH,1 do
+             additem(row,TILE:new(j,i," "))
+        end
+        additem(MAP,row)
+    end
     return self
 end
 
-local function printRoom(room) 
+local function printMap()
     local mvp = mvprintw
-    for i,str in ipairs(room.room) do
-        mvp(room.y + i - 1,room.x,str)
-    end
-end
-
-local function printPaths()
-    local mvp = mvprintw
-    for _,path in ipairs(CONNECTIONS) do
-        for _,tile in ipairs(path) do
-            mvp(tile.y,tile.x,tile.icon)
+    for i=1,HEIGHT,1 do
+        for j=1,WIDTH,1 do
+            mvp(MAP[i][j].y,MAP[i][j].x,MAP[i][j].icon)
         end
     end
 end
-
-local function printRooms()
-    local pr = printRoom
-    for _,room in ipairs(ROOMS) do
-        pr(room)
-    end
-end
-
 math.randomseed(os.time())      --seed random number generator
 
+MAP = MAP:new()
 for i = 0,1,1 do
     addRoom()
 end
-CONNECTIONS = CONNECTIONS:new()
 
 initscr()
 refresh()
-printRooms()
-printPaths()
+printMap()
 getch()
 endwin()
 
