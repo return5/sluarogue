@@ -13,31 +13,48 @@ CONNECTIONS = {}
 CONNECTIONS.__index = CONNECTIONS
 
 
+
+local function getStartX(i,rand)
+    local n = rand(0,2)
+    local x
+    if n == 0 then
+        x = ROOMS[i].x
+    elseif n == 1 then
+        x = ROOMS[i].x + ROOMS[i].width - 1
+    elseif n == 2 then
+        x = rand(ROOMS[i].x + 1,ROOMS[i].x + ROOMS[i].width - 2)
+    end
+    return x
+end
+
+local function getStartY(i,x,rand)
+    local y
+    if x == ROOMS[i].x or x == ROOMS[i].x + ROOMS[i].width - 1 then
+        y = rand(ROOMS[i].y + 1,ROOMS[i].y + ROOMS[i].height - 2)
+    else
+        y = rand(0,1) < 1 and ROOMS[i].y or (ROOMS[i].y + ROOMS[i].height)
+    end
+    return y
+end
+
 local function getStartStopXY()
     local start   = {}
     local stop    = {}
     local rand    = math.random
+    local getx    = getStartX
+    local gety    = getStartY
     local additem = table.insert
-    for i=1,ROOMS.length - 1,1 do
-        local start_x = rand(ROOMS[i].x,ROOMS[i].x + ROOMS[i].width)
-        local start_y = rand(ROOMS[i].y,ROOMS[i].y + ROOMS[i].height)
-        local stop_x  = rand(ROOMS[i+1].x,ROOMS[i+1].x + ROOMS[i+1].width)
-        local stop_y  = rand(ROOMS[i+1].y,ROOMS[i+1].y + ROOMS[i+1].height)
+    for i=1,#ROOMS - 1,1 do
+        local start_x = getx(i,rand) 
+        local start_y = gety(i,start_x,rand)
+        local stop_x  = getx(i + 1,rand) 
+        local stop_y  = gety(i + 1,stop_x,rand)
         additem(start,TILE:new(start_x,start_y,"="))
         additem(stop,TILE:new(stop_x,stop_y,"="))
     end
     return start,stop
 end
 
-function CONNECTIONS:new()
-    local self = setmetatable({},CONNECTIONS)
-    local start,stop = getStartStopXY()
-    local additem    = table.insert
-    for i,_ in ipairs(start) do
-        additem(self,PATH:NEW(start[i],stop[i]))
-    end
-    return self
-end
 
 local function checkNewTile(x,y)
     for _,room in ipairs(ROOMS) do
@@ -55,7 +72,7 @@ local function getNewXY(prev_x,prev_y,stop)
     local y = prev_y
     if x < stop.x then
         x = prev_x + 1
-    elseif prev_x > stop then
+    elseif prev_x > stop.x then
         x = prev_x - 1
     elseif prev_y < stop.y then
         y = prev_y + 1
@@ -81,7 +98,7 @@ local function getRandXY(prev_x,prev_y,rand)
     return x,y
 end
 
-local function makeNewTile(prev_x,prev_y,stop)
+local function makeNewXY(prev_x,prev_y,stop)
     local check   = checkNewTile
     local getrand = getRandXY 
     local rand    = math.random
@@ -89,13 +106,13 @@ local function makeNewTile(prev_x,prev_y,stop)
     while check(x,y) == true do
         x,y = getrand(prev_x,prev_y,rand)
     end
-    return TILE:new(x,y,"=")
+    return x,y
 end
 
 function PATH:new(start,stop)
     local self = setmetatable({},PATH)
     local additem = table.insert
-    local newtile = makeNewTile
+    local newtile = makeNewXY
     additem(self,start)
     local x = start.x
     local y = start.y
@@ -199,6 +216,18 @@ local function addRoom()
     table.insert(ROOMS,ROOM:new(h,w,x,y))
 end
 
+function CONNECTIONS:new()
+    local self = setmetatable({},CONNECTIONS)
+    local start,stop = getStartStopXY()
+    local additem    = table.insert
+    additem(self,start)
+    additem(self,stop)
+    --for i,_ in ipairs(start) do
+  --      additem(self,PATH:new(start[i],stop[i]))
+ --   end
+    return self
+end
+
 local function printRoom(room) 
     local mvp = mvprintw
     for i,str in ipairs(room.room) do
@@ -206,7 +235,7 @@ local function printRoom(room)
     end
 end
 
-local function printPath()
+local function printPaths()
     local mvp = mvprintw
     for _,path in ipairs(CONNECTIONS) do
         for _,tile in ipairs(path) do
@@ -224,13 +253,15 @@ end
 
 math.randomseed(os.time())      --seed random number generator
 
-for i = 0,3,1 do
+for i = 0,1,1 do
     addRoom()
 end
+CONNECTIONS = CONNECTIONS:new()
 
 initscr()
 refresh()
 printRooms()
+printPaths()
 getch()
 endwin()
 
