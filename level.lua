@@ -21,8 +21,8 @@ local function getStartStopXY()
     for i=1,ROOMS.length - 1,1 do
         local start_x = rand(ROOMS[i].x,ROOMS[i].x + ROOMS[i].width)
         local start_y = rand(ROOMS[i].y,ROOMS[i].y + ROOMS[i].height)
-        local stop_x = rand(ROOMS[i+1].x,ROOMS[i+1].x + ROOMS[i+1].wi+1dth)
-        local stop_y = rand(ROOMS[i+1].y,ROOMS[i+1].y + ROOMS[i+1].hei+1ght)
+        local stop_x  = rand(ROOMS[i+1].x,ROOMS[i+1].x + ROOMS[i+1].width)
+        local stop_y  = rand(ROOMS[i+1].y,ROOMS[i+1].y + ROOMS[i+1].height)
         additem(start,TILE:new(start_x,start_y,"="))
         additem(stop,TILE:new(stop_x,stop_y,"="))
     end
@@ -39,24 +39,74 @@ function CONNECTIONS:new()
     return self
 end
 
-local function makeNewTile(prev_x,prev_y,stop)
+local function checkNewTile(x,y)
+    for _,room in ipairs(ROOMS) do
+        if x > room.x and x < room.x + room.width then
+            if y > room. y and y < room.y + room.height then
+                return true
+            end
+        end
+    end
+    return false
+end
 
+local function getNewXY(prev_x,prev_y,stop)
+    local x = prev_x
+    local y = prev_y
+    if x < stop.x then
+        x = prev_x + 1
+    elseif prev_x > stop then
+        x = prev_x - 1
+    elseif prev_y < stop.y then
+        y = prev_y + 1
+    else 
+        y = prev_y - 1
+    end
+    return x,y
+end
+
+local function getRandXY(prev_x,prev_y,rand)
+    local x   = prev_x
+    local y   = prev_y
+    local dir = rand(0,3)
+    if dir == 0 then
+        x = x - 1
+    elseif dir == 1 then
+        x = x + 1
+    elseif dir == 2 then
+        y = y + 1
+    elseif dir == 3 then
+        y = y - 1
+    end
+    return x,y
+end
+
+local function makeNewTile(prev_x,prev_y,stop)
+    local check   = checkNewTile
+    local getrand = getRandXY 
+    local rand    = math.random
+    local x,y     = getNewXY(prev_x,prev_y,stop)
+    while check(x,y) == true do
+        x,y = getrand(prev_x,prev_y,rand)
+    end
+    return TILE:new(x,y,"=")
 end
 
 function PATH:new(start,stop)
     local self = setmetatable({},PATH)
     local additem = table.insert
+    local newtile = makeNewTile
     additem(self,start)
     local x = start.x
     local y = start.y
     repeat
-        x,y = makeNewTile(x,y,stop)
+        x,y = newtile(x,y,stop)
         additem(self,TILE:new(x,y,"="))
     until(x == stop.x and y == stop.y)
     return self
 end
 
-function TITLE:new(x,y,icon)
+function TILE:new(x,y,icon)
     local self = setmetatable({},TILE)
     self.x     = x
     self.y     = y
@@ -66,14 +116,16 @@ end
 
 local function makeRoom(h,w)
     local room = {}
-    local str  = string.rep("-",w)
-    table.insert(room,str)
+    local rep  = string.rep
+    local str  = rep("-",w)
+    local add  = table.insert
+    add(room,str)
     for i=1,h - 1,1 do
-        str = "|" .. string.rep(" ",w - 2) .. "|"
-        table.insert(room,str)
+        str = "|" .. rep(" ",w - 2) .. "|"
+        add(room,str)
     end
-    str  = string.rep("-",w)
-    table.insert(room,str)
+    str  = rep("-",w)
+    add(room,str)
     return room
 end
 
@@ -96,7 +148,7 @@ local function getX(w)
 end
 
 local function getWH()
-    return math.random(4,8) 
+    return math.random(4,10),math.random(3,6)
 end
 
 
@@ -121,9 +173,11 @@ local function checkX(room,x,w)
 end
 
 local function checkOverLap(h,w,x,y)
+    local checkx = checkX
+    local checky = checkY
     for _,room in ipairs(ROOMS) do
-        if checkX(room,x,w) then
-            if checkY(room,y,h) then
+        if checkx(room,x,w) then
+            if checky(room,y,h) then
                 return true
             end
         end
@@ -133,20 +187,50 @@ end
 
 local function addRoom()
     local h,w,x,y
+    local getx  = getX
+    local gety  = getY
+    local check = checkOverLap
+    local getwh = getWH
     repeat
-        h = getWH() 
-        w = getWH() 
-        x = getX(w)
-        y = getY(h)
-    until(checkOverLap(h,w,x,y) == false)
+        w,h = getwh() 
+        x   = getx(w)
+        y   = gety(h)
+    until(check(h,w,x,y) == false)
     table.insert(ROOMS,ROOM:new(h,w,x,y))
 end
 
 local function printRoom(room) 
+    local mvp = mvprintw
     for i,str in ipairs(room.room) do
-        mvprintw(room.y + i - 1,room.x,str)
+        mvp(room.y + i - 1,room.x,str)
+    end
+end
+
+local function printPath()
+    local mvp = mvprintw
+    for _,path in ipairs(CONNECTIONS) do
+        for _,tile in ipairs(path) do
+            mvp(tile.y,tile.x,tile.icon)
+        end
+    end
+end
+
+local function printRooms()
+    local pr = printRoom
+    for _,room in ipairs(ROOMS) do
+        pr(room)
     end
 end
 
 math.randomseed(os.time())      --seed random number generator
+
+for i = 0,3,1 do
+    addRoom()
+end
+
+initscr()
+refresh()
+printRooms()
+getch()
+endwin()
 
