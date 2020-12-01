@@ -22,6 +22,8 @@ local function addRoomToMap(x,y,h,w)
                 MAP[i + 1][j + 1].icon = "-"
             elseif j == x or j == wide then
                 MAP[i + 1][j + 1].icon = "|"
+            else
+                MAP[i + 1][j + 1].icon = " "
             end
         end
     end
