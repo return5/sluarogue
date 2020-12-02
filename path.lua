@@ -57,7 +57,7 @@ local function checkPath(x,y,path)
     return true
 end
 
-local function checkValid(x,y,stop,path)
+local function checkValid(x,y,stop,path,map)
     if x > WIDTH or x < 0 then
         return false
     end
@@ -67,7 +67,7 @@ local function checkValid(x,y,stop,path)
     if x == stop.x and y == stop.y then
         return true
     end
-    if MAP[y + 1][x + 1].icon ~= "*" and MAP[y + 1][x + 1].icon ~= "=" then
+    if map[y + 1][x + 1].icon ~= "*" and map[y + 1][x+1].icon ~= "*" then
         return false
     end
     return checkPath(x,y,path)
@@ -75,16 +75,16 @@ end
 
 local function getValidTiles(x,y,stop,additem,map,checkvalid,path)
     local valid_tiles = {}
-    if checkvalid(x+1,y,stop,path) then
+    if checkvalid(x+1,y,stop,path,map) == true then
         additem(valid_tiles,TILE:new(x + 1,y,"="))
     end
-    if checkvalid(x - 1,y,stop,path) then
+    if checkvalid(x - 1,y,stop,path,map) == true then
         additem(valid_tiles,TILE:new(x - 1, y,"="))
     end
-    if checkvalid(x,y + 1,stop,path) then
+    if checkvalid(x,y + 1,stop,path,map) == true then
         additem(valid_tiles,TILE:new(x,y + 1,"="))
     end
-    if checkvalid(x,y - 1,stop,path) then
+    if checkvalid(x,y - 1,stop,path,map) == true then
         additem(valid_tiles,TILE:new(x, y - 1,"="))
     end
     return valid_tiles
@@ -110,10 +110,12 @@ local function makePath(start,stop,rand,getvalidtiles,additem,map,goforstop,chec
         local prev_x = x
         local prev_y = y
         x = goforstop(x,stop.x)
-        if checkvalid(x,y,stop,path) == false then
+        if checkvalid(x,y,stop,path,map) == false then
+            x = prev_x
             y = goforstop(y,stop.y)
-            if checkvalid(prev_x,y,stop,path) == false then
-                valid_tiles = getvalidtiles(prev_x,prev_y,stop,additem,map,checkvalid,path)
+            if checkvalid(prev_x,y,stop,path,map) == false then
+                y           = prev_y
+                valid_tiles = getvalidtiles(x,y,stop,additem,map,checkvalid,path)
                 local i = rand(1,#valid_tiles)
                 x       = valid_tiles[i].x
                 y       = valid_tiles[i].y
