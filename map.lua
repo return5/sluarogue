@@ -29,10 +29,26 @@ local function printMap()
     end
 end
 
+local function addRoomToMap(room)
+    local long = room.y + room.height
+    local wide = room.x + room.width
+    for i=room.y,long,1 do
+        for j = room.x,wide,1 do
+            if i == room.y or i == long then
+                MAP[i + 1][j + 1].icon = "-"
+            elseif j == room.x or j == wide then
+                MAP[i + 1][j + 1].icon = "|"
+            else
+                MAP[i + 1][j + 1].icon = " "
+            end
+        end
+    end
+end
+
 local function addPathsToMap(paths)
-    for _,path in ipairs(paths) do
-        for j = 1,#path,1 do
-            MAP[path[j].y + 1][path[j].x + 1].icon = path[i].icon
+    for i=1,#paths,1 do
+        for j = 1,#paths[i],1 do
+            MAP[paths[i][j].y + 1][paths[i][j].x + 1].icon = paths[i][j].icon
         end
     end
 end
@@ -40,12 +56,16 @@ end
 math.randomseed(os.time())      --seed random number generator
 
 MAP = MAP:new()
-for i = 0,1,1 do
-    addRoom()
+local rooms = makeRooms(2)
+local addroom = addRoomToMap
+for i=1,#rooms,1 do
+    addroom(rooms[i])
 end
 initscr()
 refresh()
-local paths = makePaths(MAP,ROOMS)
+printMap()
+getch()
+local paths = makePaths(MAP,rooms)
 addPathsToMap(paths)
 printMap()
 getch()

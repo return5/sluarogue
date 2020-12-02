@@ -48,7 +48,16 @@ local function getStartStopXY(rand,additem,rooms)
     return start,stop
 end
 
-local function checkValid(x,y,stop)
+local function checkPath(x,y,path)
+    for i=1, #path,1 do
+        if x == path[i].x and y == path[i].y then
+            return false
+        end
+    end
+    return true
+end
+
+local function checkValid(x,y,stop,path)
     if x > WIDTH or x < 0 then
         return false
     end
@@ -58,24 +67,24 @@ local function checkValid(x,y,stop)
     if x == stop.x and y == stop.y then
         return true
     end
-    if MAP[y + 1][x + 1].icon ~= "*" and MAP[y + 1][x + 1] ~= "=" then
+    if MAP[y + 1][x + 1].icon ~= "*" and MAP[y + 1][x + 1].icon ~= "=" then
         return false
     end
-    return true
+    return checkPath(x,y,path)
 end
 
-local function getValidTiles(x,y,stop,additem,map,checkvalid)
+local function getValidTiles(x,y,stop,additem,map,checkvalid,path)
     local valid_tiles = {}
-    if checkvalid(x+1,y,stop) then
+    if checkvalid(x+1,y,stop,path) then
         additem(valid_tiles,TILE:new(x + 1,y,"="))
     end
-    if checkvalid(x - 1,y,stop) then
+    if checkvalid(x - 1,y,stop,path) then
         additem(valid_tiles,TILE:new(x - 1, y,"="))
     end
-    if checkvalid(x,y + 1,stop) then
+    if checkvalid(x,y + 1,stop,path) then
         additem(valid_tiles,TILE:new(x,y + 1,"="))
     end
-    if checkvalid(x,y - 1,stop) then
+    if checkvalid(x,y - 1,stop,path) then
         additem(valid_tiles,TILE:new(x, y - 1,"="))
     end
     return valid_tiles
@@ -91,9 +100,9 @@ local function goStraightForStop(val,stop)
 end
 
 local function makePath(start,stop,rand,getvalidtiles,additem,map,goforstop,checkvalid)
-    local path   = {}
-    local x      = start.x
-    local y      = start.y
+    local path        = {}
+    local x           = start.x
+    local y           = start.y
     local valid_tiles = {}
     additem(path,TILE:new(x,y,"="))
     map[y + 1][x + 1].icon = "="
@@ -101,17 +110,21 @@ local function makePath(start,stop,rand,getvalidtiles,additem,map,goforstop,chec
         local prev_x = x
         local prev_y = y
         x = goforstop(x,stop.x)
-        if checkvalid(x,y,stop) == false then
+        if checkvalid(x,y,stop,path) == false then
             y = goforstop(y,stop.y)
-            if checkvalid(prev_x,y,stop) == false then
-                valid_tiles = getvalidtiles(prev_x,prev_y,stop,additem,map,checkvalid)
+            if checkvalid(prev_x,y,stop,path) == false then
+                valid_tiles = getvalidtiles(prev_x,prev_y,stop,additem,map,checkvalid,path)
                 local i = rand(1,#valid_tiles)
                 x       = valid_tiles[i].x
                 y       = valid_tiles[i].y
             end
         end
         additem(path,TILE:new(x,y,"="))
+        mvprintw(y,x,"=")
+        refresh()
+        getch()
     until(x == stop.x and y == stop.y)
+    getch()
     return path
 end
 
@@ -125,6 +138,8 @@ function makePaths(map,rooms)
     local start,stop    = getStartStopXY(rand,additem,rooms)
     local getvalidtiles = getValidTiles
    for i = 1,#stop,1 do
+        mvprintw(start[i].y,start[i].x,"=")
+        mvprintw(stop[i].y,stop[i].x,"=")
         additem(paths,makepath(start[i],stop[i],rand,getvalidtiles,additem,map,goforstop,checkvalid))
     end
     return paths
