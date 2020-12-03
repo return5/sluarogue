@@ -21,19 +21,18 @@ function ROOM:new(height,width,x,y)
 end
 
 local function getY(h) 
-    return math.random(0,HEIGHT - h - 1)
+    return math.random(1,HEIGHT - h - 2)
 end
 
 local function getX(w)
-    return math.random(1,WIDTH - w - 1)
+    return math.random(1,WIDTH - w - 2)
 end
 
 local function getWH()
     return math.random(4,10),math.random(3,6)
 end
 
-local function checkOverLap(h,w,x,y)
-    local checkval = checkVal
+local function checkOverLap(h,w,x,y,rooms,checkval)
     if rooms ~= nil then
         for i=1,#rooms,1 do
             if checkval(rooms[i].x,rooms[i].width,x,w,4) then
@@ -46,26 +45,27 @@ local function checkOverLap(h,w,x,y)
     return false
 end
 
-local function addRoom(getx,gety,check,getwh,rooms)
+local function addRoom(getx,gety,check,getwh,rooms,checkval)
     local h,w,x,y
     repeat
         w,h = getwh() 
         x   = getx(w)
         y   = gety(h)
-    until(check(h,w,x,y,rooms) == false)
+    until(check(h,w,x,y,rooms,checkval) == false)
     return ROOM:new(h,w,x,y)
 end
 
 function makeRooms(stop)
-    local getx    = getX
-    local gety    = getY
-    local addroom = addRoom
-    local check   = checkOverLap
-    local getwh   = getWH
-    local additem = table.insert
-    local rooms   = {}
+    local getx     = getX
+    local gety     = getY
+    local addroom  = addRoom
+    local check    = checkOverLap
+    local getwh    = getWH
+    local additem  = table.insert
+    local checkval = checkVal
+    local rooms    = {}
     for i = 1,stop,1 do
-        additem(rooms,addroom(getx,gety,check,getwh,rooms))
+        additem(rooms,addroom(getx,gety,check,getwh,rooms,checkval))
     end
     return rooms
 end

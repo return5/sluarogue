@@ -1,4 +1,4 @@
-local Tile = require("tile")
+local Tile   = require("tile")
 local Ncurse = require("sluacurses")
 
 local function checkVal(room_v,room_p,val)
@@ -57,7 +57,7 @@ local function findShortestSideOfRoom(x,y,map,icon,counticons)
     return forwards < backwards and forawards or backwards * -1
 end
 
-local function finPathARoundRoom(map,x,y,stop,findshortest,icon,counticons,additem)
+local function finPathAroundRoom(map,x,y,stop,findshortest,icon,counticons,additem)
     local count = findshortest(x,y,map,icon,counticons)
     local dir   = count < 0 and -1 or 1
     local path  = {}
@@ -149,22 +149,19 @@ local function goStraightForStop(x,y,stop,path,additem,checkstraight,checkvalid,
         if checkvalid(x,y,stop,path,map) == true then
             additem(path,TILE:new(x,y,"="))
             count = count + 1
-        mvprintw(y,x,"=")
-        refresh()
-        getch()
         else
             x = prev_x
             y = checkstraight(y,stop.y)
             if checkvalid(x,y,stop,path,map) == true then
                 additem(path,TILE:new(x,y,"="))
                 count = count + 1
-        mvprintw(y,x,"=")
-        refresh()
-        getch()
             else
                 y   = prev_y
                 run = false
             end
+        mvprintw(y,x,"=")
+        refresh()
+        getch()
         end
     until(run == false)
     return x,y,path,count
