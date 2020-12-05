@@ -34,11 +34,27 @@ local function getStarStoptY(rand,rooms,s_x,additem)
 end
 
 
-local function makeStartStop(rooms)
+function makeStartStop(rooms)
     local rand    = math.random 
     local start_x = getStartStopX(rand,rooms,additem)
     local start_y = getStartStopY(rand,rooms,start_x,additem)
     local stop_x  = getStartStopX(rand,rooms,additem)
     local stop_y  = getStartStopY(rand,rooms,stop_x,additem)
-    return start_x,start_y,stop_x,stop_y
+    local start   = {}
+    local stop    = {}
+    for i=1,#start_x - 1, 1 do
+        additem(start,TILE:new(start_x[i],start_y[i],"="))
+        additem(stop,TILE:new(stop_x[i + 1],stop_y[i + 1],"="))
+    end
+    return start,stop
 end
+
+function makePaths(map,rooms,start,stop)
+    local paths   = {}
+    local rand    = math.random
+    local additem = table.add
+
+    return paths
+end
+
+
