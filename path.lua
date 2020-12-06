@@ -2,7 +2,7 @@ local Tile   = require("tile")
 local Ncurse = require("sluacurses")
 
 
-local function getStartStopX(rand,rooms,additem)
+local function getStartStopX(rand,rooms)
     local s_x = {}
     for i=1,#rooms, 1 do
         local x = 0
@@ -14,12 +14,12 @@ local function getStartStopX(rand,rooms,additem)
         else
             x = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
         end
-        additem(s_x,x)
+        s_x[i] = x
     end
     return s_x
 end
 
-local function getStarStopY(rand,rooms,s_x,additem)
+local function getStartStopY(rand,rooms,s_x)
     local s_y = {}
     for i=1,#s_x,1 do
         local y = 0
@@ -28,7 +28,7 @@ local function getStarStopY(rand,rooms,s_x,additem)
         else
             y = rand(0,9) < 5 and rooms[i].y or (rooms[i].y + rooms[i].height)
         end
-        additem(s_y,y)
+        s_y[i] = y
     end
     return s_y
 end
@@ -36,25 +36,27 @@ end
 
 function makeStartStop(rooms)
     local rand    = math.random 
-    local additem = table.add
-    local start_x = getStartStopX(rand,rooms,additem)
-    local start_y = getStartStopY(rand,rooms,start_x,additem)
-    local stop_x  = getStartStopX(rand,rooms,additem)
-    local stop_y  = getStartStopY(rand,rooms,stop_x,additem)
+    local start_x = getStartStopX(rand,rooms)
+    local start_y = getStartStopY(rand,rooms,start_x)
+    local stop_x  = getStartStopX(rand,rooms)
+    local stop_y  = getStartStopY(rand,rooms,stop_x)
     local start   = {}
     local stop    = {}
     for i=1,#start_x - 1, 1 do
-        additem(start,TILE:new(start_x[i],start_y[i],"="))
-        additem(stop,TILE:new(stop_x[i + 1],stop_y[i + 1],"="))
+        start[i] = TILE:new(start_x[i],start_y[i],"=")
+        stop[i]  = TILE:new(stop_x[i + 1],stop_y[i + 1],"=")
     end
     return start,stop
 end
 
-function makePaths(map,rooms,start,stop)
-    local paths   = {}
-    local rand    = math.random
-    local additem = table.add
-
+function makePaths(map,start,stop)
+    local paths    = {}
+    local rand     = math.random
+    local additem  = table.insert
+    local makepath = makePath
+    for i=1,#start,1 do
+        paths[i] = makepath(start,stop,rand,additem)
+    end
     return paths
 end
 

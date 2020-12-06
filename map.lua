@@ -1,5 +1,5 @@
 local Path  = require("path")
-local Room = require("room")
+local Room  = require("room")
 
 HEIGHT = 35
 WIDTH  = 80
@@ -56,8 +56,8 @@ end
 
 local function addStartStopToMap(start,stop)
     for i=1,#start,1 do
-        MAP[start[i].y][start[i].x] = start[i]
-        MAP[stop[i].y][stop[i].x]   = stop[i]
+        MAP[start[i].y + 1][start[i].x + 1] = start[i]
+        MAP[stop[i].y + 1][stop[i].x + 1]   = stop[i]
     end
 end
 
@@ -73,8 +73,8 @@ initscr()
 refresh()
 local start,stop = makeStartStop(rooms)
 addStartStopToMap(start,stop)
-local paths = makePaths(MAP,roomsmstart,stop)
-addPathsToMap(paths)
+--local paths = makePaths(MAP,start,stop)
+--addPathsToMap(paths)
 printMap()
 getch()
 endwin()
