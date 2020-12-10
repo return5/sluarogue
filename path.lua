@@ -33,7 +33,6 @@ local function getStartStopY(rand,rooms,s_x)
     return s_y
 end
 
-
 function makeStartStop(rooms)
     local rand    = math.random 
     local start_x = getStartStopX(rand,rooms)
@@ -49,13 +48,48 @@ function makeStartStop(rooms)
     return start,stop
 end
 
+local function goStraightForStop(map,path,x,y,stop,getx,gety)
+    local run   = true
+    local count = 0
+    repeat
+        local prev_x = x
+        local prev_y = y
+        x = getx(x,stop,path,map)
+        if x == nil then
+            x = prev_x
+            y = gety(y,stop,path,map)
+            if y == nil then
+                run = false
+                return count
+            end
+        end
+        count = count + 1
+        path[#path + 1] = TILE:new(x,y,"=")
+    until(run == false)
+end
+
+local function makePAth(map,start,stop,rand,gostraight)
+    local path = {}
+    path[1]    = start
+    local x    = start.x
+    local y    = start.y
+    repeat
+        local prev_x = x
+        local prev_y = y
+        gostraight(map,path,x,y,stop,getx,gety)
+    until(x == stop.x and y == stop.y)
+    return path
+end
+
 function makePaths(map,start,stop)
-    local paths    = {}
-    local rand     = math.random
-    local additem  = table.insert
-    local makepath = makePath
+    local paths      = {}
+    local rand       = math.random
+    local makepath   = makePath
+    local gostraight = goStraightForStop
+    local getx       = getXTowardsStop
+    local gety       = getYTowardsStop
     for i=1,#start,1 do
-        paths[i] = makepath(start,stop,rand,additem)
+        paths[i] = makepath(map,start[i],stop[i],rand,gostraight,getx,gety)
     end
     return paths
 end
