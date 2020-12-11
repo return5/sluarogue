@@ -35,6 +35,14 @@ local function printIcon(map,i,j)
     mvprintw(i - 1,j - 1,"%c",map[i][j])
 end
 
+local function addPathsToCollisionMap(map,paths)
+    for i=1,#paths,1 do
+        for j=1,#paths[i],1 do
+            map[paths[i][j][2]][paths[i][j][1]] = 4
+        end
+    end
+end
+
 local function loopMap(map,fn,item)
     local func = fn
     for i=1,HEIGHT,1 do
@@ -48,8 +56,13 @@ local function loopRooms(map,rooms,fn,top,side,middle)
     local func = fn
     for i=1,#rooms,1 do
         func(map,rooms[i],top,side,middle)
-        loopMap(MAP,printIcon,nil)
-        getch()
+    end
+end
+
+local function addStartStopToCollision(collision_map,start,stop)
+    for i = 1, #start,1 do
+        collision_map[start[i][2]][start[i][1]] = 0
+        collision_map[stop[i][2]][stop[i][1]]   = 0
     end
 end
 
@@ -73,13 +86,17 @@ MAP           = MAP:new()
 collision_map = MAP:new()
 loopMap(MAP,addIconToMap," ")
 loopMap(collision_map,addIconToMap,0)
-local rooms   = makeRooms(6)
+local rooms   = makeRooms(2)
 loopRooms(MAP,rooms,addRoomToMap,"-","|"," ")
 loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
---local start,stop = makeStartStop(rooms)
---addStartStopToMap(start,stop)
---local paths = makePaths(MAP,start,stop)
---addPathsToMap(paths)
+local start,stop = makeStartStop(rooms)
+addStartStopToCollision(collision_map,start,stop)
+--for i,_ in ipairs(start) do
+  --  io.write("start[",i,"]: ",start[i][1],start[i][2],"\n")
+    --io.write("stop[",i,"]: ",stop[i][1],stop[i][2],"\n")
+--end
+local paths = makePaths(collision_map,start,stop)
+addPathsToCollisionMap(collision_map,paths)
 initscr()
 refresh()
 loopMap(collision_map,printIcon,nil)

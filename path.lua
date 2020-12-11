@@ -42,54 +42,35 @@ function makeStartStop(rooms)
     local start   = {}
     local stop    = {}
     for i=1,#start_x - 1, 1 do
-        start[i] = TILE:new(start_x[i],start_y[i],"=")
-        stop[i]  = TILE:new(stop_x[i + 1],stop_y[i + 1],"=")
+        start[i] = {start_x[i] + 1,start_y[i] + 1}
+        stop[i]  = {stop_x[i + 1] + 1,stop_y[i + 1] + 1}
     end
+    start[#start + 1] = {start_x[#start_x] + 1,start_y[#start_y] + 1} 
+    stop[#stop + 1]   = {stop_x[1] + 1,stop_y[1] + 1}
     return start,stop
 end
 
-local function goStraightForStop(map,path,x,y,stop,getx,gety)
-    local run   = true
-    local count = 0
-    repeat
-        local prev_x = x
-        local prev_y = y
-        x = getx(x,stop,path,map)
-        if x == nil then
-            x = prev_x
-            y = gety(y,stop,path,map)
-            if y == nil then
-                run = false
-                return count
-            end
-        end
-        count = count + 1
-        path[#path + 1] = TILE:new(x,y,"=")
-    until(run == false)
-end
 
-local function makePAth(map,start,stop,rand,gostraight)
-    local path = {}
-    path[1]    = start
-    local x    = start.x
-    local y    = start.y
-    repeat
-        local prev_x = x
-        local prev_y = y
-        gostraight(map,path,x,y,stop,getx,gety)
-    until(x == stop.x and y == stop.y)
+local function makePath(finder,start,stop,additem)
+    local my_path = finder:getPath(start[1],start[2],stop[1],stop[2])
+    local path    = {}
+    for node,_ in my_path:nodes() do
+        additem(path,{node:getX(),node:getY()})
+    end
     return path
 end
 
 function makePaths(map,start,stop)
-    local paths      = {}
-    local rand       = math.random
-    local makepath   = makePath
-    local gostraight = goStraightForStop
-    local getx       = getXTowardsStop
-    local gety       = getYTowardsStop
+    local paths    = {}
+    local makepath = makePath
+    local Grid     = require("jumper.grid")
+    local Pf       = require ("jumper.pathfinder") 
+    local grid     = Grid(map)
+    local finder   = Pf(grid,'DIJKSTRA',0)
+    local additem  = table.insert
+    finder:setMode("ORTHOGONAL")
     for i=1,#start,1 do
-        paths[i] = makepath(map,start[i],stop[i],rand,gostraight,getx,gety)
+        additem(paths,makepath(finder,start[i],stop[i],additem))
     end
     return paths
 end
