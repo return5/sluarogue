@@ -45,11 +45,11 @@ function makeStartStop(rooms)
         start[i] = {start_x[i] + 1,start_y[i] + 1}
         stop[i]  = {stop_x[i + 1] + 1,stop_y[i + 1] + 1}
     end
+    --set the last start point to last room, and last stop to first room
     start[#start + 1] = {start_x[#start_x] + 1,start_y[#start_y] + 1} 
     stop[#stop + 1]   = {stop_x[1] + 1,stop_y[1] + 1}
     return start,stop
 end
-
 
 local function makePath(finder,start,stop,additem)
     local my_path = finder:getPath(start[1],start[2],stop[1],stop[2])

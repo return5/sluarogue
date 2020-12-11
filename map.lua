@@ -1,11 +1,14 @@
 local Path  = require("path")
 local Room  = require("room")
+local Ncurse = require("sluacurses")
 
 HEIGHT = 45
 WIDTH  = 100
 
-MAP = {{}}
+MAP = { {} }
 MAP.__index = MAP
+
+local GAME_MAP
 
 function MAP:new()
     local self    = setmetatable({},MAP)
@@ -41,6 +44,21 @@ local function addPathsToCollisionMap(map,paths)
             map[paths[i][j][2]][paths[i][j][1]] = 4
         end
     end
+end
+
+local function convertCollisionToMap(collision,i,j,map)
+    local icon     = collision[i][j]
+    local new_icon = "."
+    if icon == 1 then
+        new_icon = "-"
+    elseif icon == 2 then
+        new_icon = "|"
+    elseif icon == 3 then
+        new_icon = " "
+    elseif icon == 4 then
+        new_icon = "="
+    end
+    map[i][j] = new_icon
 end
 
 local function loopMap(map,fn,item)
@@ -79,27 +97,21 @@ local function addRoomToMap(map,room,top,side,middle)
     itheight(map,y_limit,y_limit,room.x,x_limit,top,addicon,itwidth)
 end
 
+function makeMap()
+    GAME_MAP            = MAP:new()
+    local collision_map = MAP:new()
+    local rooms         = makeRooms(8)
+    local start,stop    = makeStartStop(rooms)
+    loopMap(collision_map,addIconToMap,0)
+    loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
+    addStartStopToCollision(collision_map,start,stop)
+    local paths = makePaths(collision_map,start,stop)
+    addPathsToCollisionMap(collision_map,paths)
+    loopMap(collision_map,convertCollisionToMap,GAME_MAP)
+end
 
-math.randomseed(os.time())      --seed random number generator
+function printMap()
+   loopMap(GAME_MAP,printIcon,nil) 
+end
 
-MAP           = MAP:new()
-collision_map = MAP:new()
-loopMap(MAP,addIconToMap," ")
-loopMap(collision_map,addIconToMap,0)
-local rooms   = makeRooms(2)
-loopRooms(MAP,rooms,addRoomToMap,"-","|"," ")
-loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
-local start,stop = makeStartStop(rooms)
-addStartStopToCollision(collision_map,start,stop)
---for i,_ in ipairs(start) do
-  --  io.write("start[",i,"]: ",start[i][1],start[i][2],"\n")
-    --io.write("stop[",i,"]: ",stop[i][1],stop[i][2],"\n")
---end
-local paths = makePaths(collision_map,start,stop)
-addPathsToCollisionMap(collision_map,paths)
-initscr()
-refresh()
-loopMap(collision_map,printIcon,nil)
-getch()
-endwin()
 

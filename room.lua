@@ -19,7 +19,7 @@ local function getX(w)
 end
 
 local function getWH()
-    return math.random(4,10),math.random(3,6)
+    return math.random(4,14),math.random(3,8)
 end
 
 local function checkOverLap(val_start,val_end,room_start,room_end)
