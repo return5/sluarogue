@@ -98,16 +98,17 @@ local function addRoomToMap(map,room,top,side,middle)
 end
 
 function makeMap()
-    GAME_MAP            = MAP:new()
-    local collision_map = MAP:new()
+  --  GAME_MAP            = MAP:new()
+   -- local collision_map = MAP:new()
     local rooms         = makeRooms(8)
-    local start,stop    = makeStartStop(rooms)
-    loopMap(collision_map,addIconToMap,0)
-    loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
-    addStartStopToCollision(collision_map,start,stop)
-    local paths = makePaths(collision_map,start,stop)
-    addPathsToCollisionMap(collision_map,paths)
-    loopMap(collision_map,convertCollisionToMap,GAME_MAP)
+   -- local start,stop    = makeStartStop(rooms)
+   -- loopMap(collision_map,addIconToMap,0)
+  --  loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
+  --  addStartStopToCollision(collision_map,start,stop)
+ --   local paths = makePaths(collision_map,start,stop)
+  --  addPathsToCollisionMap(collision_map,paths)
+  --  loopMap(collision_map,convertCollisionToMap,GAME_MAP)
+  return rooms
 end
 
 function printMap()
