@@ -82,7 +82,7 @@ loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
 --addPathsToMap(paths)
 initscr()
 refresh()
-loopMap(MAP,printIcon,nil)
+loopMap(collision_map,printIcon,nil)
 getch()
 endwin()
 

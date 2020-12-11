@@ -23,35 +23,46 @@ local function getWH()
     return math.random(4,10),math.random(3,6)
 end
 
-local function checkOverLap(val,offset,room_val,length,additional)
-    --if x/y of current room is inside of another room
-    if val >= room_val and val <= (room_val + length + additional) then
+local function checkOverLap(val_start,val_end,room_start,room_end)
+    if val_start >= room_start and val_start <= room_end then
         return true
     end
-    --if the edge of current room is inside of another room
-    if (val + offset) >= room_val and (val + offset) <= (room_val + length + additional) then
+    if val_end >= room_start and val_end <= room_end then
         return true
     end
     return false
 end
 
-local function checkUnderLap(val,room_val,length)
+local function checkUnderLap(val,room_start,room_end)
     --if current room covers another room
-    if room_val < val and (room_val + length) > val then
+    if room_start <= val and room_end >= val then
         return true
     end
     return false
+end
 
+local function checkProximity(val_start,val_end,room_start,room_end,offset)
+    if val_start >= room_start - offset and val_start <= room_end + offset then
+        return true
+    end
+    if val_end >= room_start - offset and val_end <= room_end + offset then
+        return true
+    end
+    return false
 end
 
 local function checkRoom(rooms,x,y,w,h,func_table)
     for i=1,#rooms,1 do
-        if func_table.overlap(x,w,rooms[i].x,rooms[i].width,4) and
-            func_table.overlap(y,h,rooms[i].y,rooms[i].height,2) then
+        if func_table.overlap(x,x + w,rooms[i].x,rooms[i].x + rooms[i].width + 4) and
+            func_table.overlap(y,y + h,rooms[i].y,rooms[i].y + rooms[i].height + 2) then
             return true
         end
-        if func_table.underlap(x,rooms[i].x,rooms[i].width) and
-            func_table.underlap(y,rooms[i].y,rooms[i].height) then
+        if func_table.underlap(x,rooms[i].x,rooms[i].x + rooms[i].width) and
+            func_table.underlap(y,rooms[i].y,rooms[i].y + rooms[i].height) then
+            return true
+        end
+        if func_table.checkprox(x,x + w,rooms[i].x, rooms[i].x + rooms[i].width, 4)  and 
+            func_table.checkprox(y, y + h,rooms[i].y, rooms[i].y + rooms[i].height,2)then
             return true
         end
     end
@@ -86,9 +97,10 @@ function makeRooms(stop)
     local underlap   = checkUnderLap
     local checkroom  = checkRoom
     local additem    = table.insert
+    local checkprox  = checkProximity
     local func_table = {
             getx = getx,gety = gety,getwh = getwh,additem = additem,overlap = overlap,
-            underlap = underlap,checkroom = checkroom, additem = additem
+            underlap = underlap,checkroom = checkroom, additem = additem,checkprox = checkprox
     }
 
     local rooms      = {}
