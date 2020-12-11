@@ -1,8 +1,8 @@
 local Path  = require("path")
 local Room  = require("room")
 
-HEIGHT = 35
-WIDTH  = 80
+HEIGHT = 45
+WIDTH  = 100
 
 MAP = {{}}
 MAP.__index = MAP

@@ -32,37 +32,16 @@ local function checkOverLap(val_start,val_end,room_start,room_end)
     end
     return false
 end
-
-local function checkUnderLap(val,room_start,room_end)
-    --if current room covers another room
-    if room_start <= val and room_end >= val then
-        return true
-    end
-    return false
-end
-
-local function checkProximity(val_start,val_end,room_start,room_end,offset)
-    if val_start >= room_start - offset and val_start <= room_end + offset then
-        return true
-    end
-    if val_end >= room_start - offset and val_end <= room_end + offset then
-        return true
-    end
-    return false
-end
-
 local function checkRoom(rooms,x,y,w,h,func_table)
     for i=1,#rooms,1 do
-        if func_table.overlap(x,x + w,rooms[i].x,rooms[i].x + rooms[i].width + 4) and
-            func_table.overlap(y,y + h,rooms[i].y,rooms[i].y + rooms[i].height + 2) then
+        --check if current room is located inside of a square covering rooms[i] exteding 4 blocks in x direction and 2 in y
+        if func_table.overlap(x,x + w,rooms[i].x - 4,rooms[i].x + rooms[i].width + 4) and
+            func_table.overlap(y,y + h,rooms[i].y - 2,rooms[i].y + rooms[i].height + 2) then
             return true
         end
-        if func_table.underlap(x,rooms[i].x,rooms[i].x + rooms[i].width) and
-            func_table.underlap(y,rooms[i].y,rooms[i].y + rooms[i].height) then
-            return true
-        end
-        if func_table.checkprox(x,x + w,rooms[i].x, rooms[i].x + rooms[i].width, 4)  and 
-            func_table.checkprox(y, y + h,rooms[i].y, rooms[i].y + rooms[i].height,2)then
+        -- check if current room covers rooms[i]
+        if func_table.underlap(x,0,rooms[i].x,rooms[i].x + rooms[i].width) and
+            func_table.underlap(y,0,rooms[i].y,rooms[i].y + rooms[i].height) then
             return true
         end
     end
@@ -94,13 +73,11 @@ function makeRooms(stop)
     local getwh      = getWH
     local additem    = table.insert
     local overlap    = checkOverLap
-    local underlap   = checkUnderLap
     local checkroom  = checkRoom
     local additem    = table.insert
-    local checkprox  = checkProximity
     local func_table = {
             getx = getx,gety = gety,getwh = getwh,additem = additem,overlap = overlap,
-            underlap = underlap,checkroom = checkroom, additem = additem,checkprox = checkprox
+            underlap = overlap,checkroom = checkroom, additem = additem
     }
 
     local rooms      = {}
