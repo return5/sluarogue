@@ -31,6 +31,27 @@ local function iterateRoomHeight(map,start_y,end_y,start_x,end_x,icon,addicon,it
     end
 end
 
+local function printIcon(map,i,j)
+    mvprintw(i - 1,j - 1,"%c",map[i][j])
+end
+
+local function loopMap(map,fn,item)
+    local func = fn
+    for i=1,HEIGHT,1 do
+        for j=1,WIDTH,1 do
+            func(map,i,j,item)            
+        end
+    end
+end
+
+local function loopRooms(map,rooms,fn,top,side,middle)
+    local func = fn
+    for i=1,#rooms,1 do
+        func(map,rooms[i],top,side,middle)
+        loopMap(MAP,printIcon,nil)
+        getch()
+    end
+end
 
 local function addRoomToMap(map,room,top,side,middle)
     local addicon  = addIconToMap
@@ -45,25 +66,6 @@ local function addRoomToMap(map,room,top,side,middle)
     itheight(map,y_limit,y_limit,room.x,x_limit,top,addicon,itwidth)
 end
 
-local function loopRooms(map,rooms,fn,top,side,middle)
-    local func = fn
-    for i=1,#rooms,1 do
-        func(map,rooms[i],top,side,middle)
-    end
-end
-
-local function printIcon(map,i,j)
-    mvprintw(i - 1,j - 1,"%c",map[i][j])
-end
-
-local function loopMap(map,fn,item)
-    local func = fn
-    for i=1,HEIGHT,1 do
-        for j=1,WIDTH,1 do
-            func(map,i,j,item)            
-        end
-    end
-end
 
 math.randomseed(os.time())      --seed random number generator
 
@@ -71,17 +73,16 @@ MAP           = MAP:new()
 collision_map = MAP:new()
 loopMap(MAP,addIconToMap," ")
 loopMap(collision_map,addIconToMap,0)
---loopMap(collison_map,addIconToMap,"*")
-local rooms   = makeRooms(2)
+local rooms   = makeRooms(6)
 loopRooms(MAP,rooms,addRoomToMap,"-","|"," ")
 loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
-initscr()
-refresh()
 --local start,stop = makeStartStop(rooms)
 --addStartStopToMap(start,stop)
 --local paths = makePaths(MAP,start,stop)
 --addPathsToMap(paths)
-loopMap(collision_map,printIcon,nil)
+initscr()
+refresh()
+loopMap(MAP,printIcon,nil)
 getch()
 endwin()
 
