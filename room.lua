@@ -54,15 +54,15 @@ local function addRoom(rooms,i,func_table)
     w,h = func_table.getwh() 
     x   = func_table.getx(w)
     y   = func_table.gety(h)
+    --keep trying random values until room no longer confliscts with another room
     until(func_table.checkroom(rooms,x,y,w,h,func_table) == false)
     return ROOM:new(h,w,x,y)
 end
 
 
-local function loopRooms(rooms,fn,func_table,stop)
-    local func = fn
+local function loopRooms(rooms,func_table,stop)
     for i=1,stop,1 do
-        func_table.additem(rooms,func(rooms,i,func_table))
+        func_table.additem(rooms,func_table.addroom(rooms,i,func_table))
     end
 end
 
@@ -74,14 +74,13 @@ function makeRooms(stop)
     local additem    = table.insert
     local overlap    = checkOverLap
     local checkroom  = checkRoom
-    local additem    = table.insert
-    local func_table = {
+    local func_table = 
+        {  
             getx = getx,gety = gety,getwh = getwh,additem = additem,overlap = overlap,
-            underlap = overlap,checkroom = checkroom, additem = additem
-    }
-
+            underlap = overlap,checkroom = checkroom,addroom = addroom
+        }
     local rooms      = {}
-    loopRooms(rooms,addRoom,func_table,stop)
+    loopRooms(rooms,func_table,stop)
     return rooms
 end
 
