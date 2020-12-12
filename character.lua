@@ -1,6 +1,10 @@
 local INV = require("inventory")
 
-local CHARACTER = {x = nil, y = nil, health = nil, attack = nil, def = nil, inv = nil,icon = nil, name = nil }
+local CHARACTER = {
+        x = nil, y = nil, health = nil, attack = nil, def = nil, inv = nil,icon = nil, name = nil, 
+        prev_def = nil, def_raised = nil, prev_attack = nil, attack_raised = nil
+    }
+
 CHARACTER.__index = CHARACTER
 
 local ENEMY_LIST  = {}
@@ -33,7 +37,8 @@ local function makeSwordsman(rand,room)
     local gold    = rand(0,200)
     local m_p     = rand(0,3)
     local d_p     = rand(0,3)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = rand(0,3)
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local icon    = "S"
     local name    = "Swordsman"
     return CHARACTER:new(x,y,health,attack,defense,inv,icon,name)
@@ -47,7 +52,8 @@ local function makeBat(rand,room)
     local gold    = rand(0,5)
     local m_p     = 0 
     local d_p     = 0 
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = 0 
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "B"
     local name    = "Bat"
@@ -62,7 +68,8 @@ local function makeSpearman(rand,room)
     local gold    = rand(0,250)
     local m_p     = rand(0,4)
     local d_p     = rand(0,4)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = rand(0,4)
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "E"
     local name    = "Spearman"
@@ -77,7 +84,8 @@ local function makeWolf(rand,room)
     local gold    = 0
     local m_p     = 0
     local d_p     = 0
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = 0
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "W"
     local name    = "Wolf"
@@ -92,7 +100,8 @@ local function makeBear(rand,room)
     local gold    = rand(0,10)
     local m_p     = 0
     local d_p     = 0
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = 0
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "D"
     local name    = "Bear"
@@ -107,7 +116,8 @@ local function makeMonster(rand,room)
     local gold    = rand(0,100)
     local m_p     = rand(0,1)
     local d_p     = rand(0,1)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = rand(0,1)
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "M"
     local name    = "Monster"
@@ -122,7 +132,8 @@ local function makeMAge(rand,room)
     local gold    = rand(0,400)
     local m_p     = rand(0,6)
     local d_p     = rand(0,3)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = rand(0,2)
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "V"
     local name    = "Mage"
@@ -137,7 +148,8 @@ local function makeRogue(rand,room)
     local gold    = rand(0,150)
     local m_p     = rand(0,1)
     local d_p     = rand(0,2)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p)
+    local a_p     = rand(0,3)
+    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "R"
     local name    = "Rogue"
