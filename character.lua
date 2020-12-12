@@ -1,9 +1,9 @@
 local INV = require("inventory")
 
-CHARACTER = {x = nil, y = nil, health = nil, attack = nil, def = nil, inv = nil,icon = nil, name = nil }
+local CHARACTER = {x = nil, y = nil, health = nil, attack = nil, def = nil, inv = nil,icon = nil, name = nil }
 CHARACTER.__index = CHARACTER
 
-ENEMY_LIST  = {}
+local ENEMY_LIST  = {}
 local ENEMY_FUNCS  --holds list of functions which make enemy types
 
 function CHARACTER:new(x,y,h,a,d,inv,icon,name)
@@ -182,4 +182,5 @@ function populateEnemyList(rooms)
         local num = getnumenemy(rooms[i],func_table.rand,ceil)
         makeenemies(num,func_table,rooms[i])
     end
+    return ENEMY_LIST
 end

@@ -56,15 +56,20 @@ local function makePath(finder,start,stop,additem)
     return path
 end
 
+function getFinder(collision_map,walkable)
+    local Pf       = require ("jumper.pathfinder") 
+    local Grid     = require("jumper.grid")
+    local grid     = Grid(collision_map)
+    local finder   = Pf(grid,'DIJKSTRA',0)
+    finder:setMode("ORTHOGONAL")
+    return finder
+end
+
 function makePaths(map,start,stop)
     local paths    = {}
     local makepath = makePath
-    local Grid     = require("jumper.grid")
-    local Pf       = require ("jumper.pathfinder") 
-    local grid     = Grid(map)
-    local finder   = Pf(grid,'DIJKSTRA',0)
     local additem  = table.insert
-    finder:setMode("ORTHOGONAL")
+    local finder   = getFinder(map,0)
     for i=1,#start,1 do
         additem(paths,makepath(finder,start[i],stop[i],additem))
     end

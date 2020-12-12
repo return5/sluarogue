@@ -1,11 +1,10 @@
 local Path  = require("path")
-local Room  = require("room")
 local Ncurse = require("sluacurses")
 
 HEIGHT = 45
 WIDTH  = 100
 
-MAP = { {} }
+MAP   = {}
 MAP.__index = MAP
 
 local GAME_MAP
@@ -34,8 +33,8 @@ local function iterateRoomHeight(map,start_y,end_y,start_x,end_x,icon,addicon,it
     end
 end
 
-local function printIcon(map,i,j)
-    mvprintw(i - 1,j - 1,"%c",map[i][j])
+local function printIcon(map,i,j,window)
+    wmvprintw(window,i - 1,j - 1,map[i][j].icon)
 end
 
 local function addPathsToCollisionMap(map,paths)
@@ -43,6 +42,12 @@ local function addPathsToCollisionMap(map,paths)
         for j=1,#paths[i],1 do
             map[paths[i][j][2]][paths[i][j][1]] = 4
         end
+    end
+end
+
+local function convertToWalkable(map,i,j)
+    if map[i][j] == 3 then
+        map[i][j] = 4
     end
 end
 
@@ -56,9 +61,9 @@ local function convertCollisionToMap(collision,i,j,map)
     elseif icon == 3 then
         new_icon = " "
     elseif icon == 4 then
-        new_icon = "="
+        new_icon = "#"
     end
-    map[i][j] = new_icon
+    map[i][j] = {icon = new_icon,visible = false}
 end
 
 local function loopMap(map,fn,item)
@@ -97,22 +102,26 @@ local function addRoomToMap(map,room,top,side,middle)
     itheight(map,y_limit,y_limit,room.x,x_limit,top,addicon,itwidth)
 end
 
-function makeMap()
-  --  GAME_MAP            = MAP:new()
-   -- local collision_map = MAP:new()
-    local rooms         = makeRooms(8)
-   -- local start,stop    = makeStartStop(rooms)
-   -- loopMap(collision_map,addIconToMap,0)
-  --  loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
-  --  addStartStopToCollision(collision_map,start,stop)
- --   local paths = makePaths(collision_map,start,stop)
-  --  addPathsToCollisionMap(collision_map,paths)
-  --  loopMap(collision_map,convertCollisionToMap,GAME_MAP)
-  return rooms
+--make collision map then make the game map from that collision map
+--finally, return collision map back to main
+function makeMap(rooms)
+    GAME_MAP            = MAP:new()
+    local collision_map = MAP:new()
+    local start,stop    = makeStartStop(rooms)
+    loopMap(collision_map,addIconToMap,0)
+    loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
+    addStartStopToCollision(collision_map,start,stop)
+    local paths = makePaths(collision_map,start,stop)
+    addPathsToCollisionMap(collision_map,paths)
+    loopMap(collision_map,convertCollisionToMap,GAME_MAP)
+    loopMap(collision_map,convertToWalkable,nil)
+  return collision_map
 end
 
-function printMap()
-   loopMap(GAME_MAP,printIcon,nil) 
+
+function printMap(window)
+   loopMap(GAME_MAP,printIcon,window) 
+   wrefresh(window)
 end
 
 

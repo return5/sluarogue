@@ -1,4 +1,4 @@
-ROOM   = {height = nil, width = nil,x = nil,y = nil}
+local ROOM   = {height = nil, width = nil,x = nil,y = nil}
 ROOM.__index = ROOM
 
 function ROOM:new(height,width,x,y)
