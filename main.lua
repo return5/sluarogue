@@ -1,6 +1,6 @@
-local Map   = require("map")
-local Char  = require("character")
-local Rooms = require("room")
+local Map   = require("core.map")
+local Char  = require("core.character")
+local Rooms = require("core.room")
 
 local function initNcurses()
     initscr()
