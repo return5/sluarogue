@@ -1,13 +1,12 @@
+--File contains functions for creating collision map and game map
+
 local Path  = require("path")
-local Ncurse = require("sluacurses")
 
 HEIGHT = 45
 WIDTH  = 100
 
-MAP   = {}
+local MAP   = {}
 MAP.__index = MAP
-
-local GAME_MAP
 
 function MAP:new()
     local self    = setmetatable({},MAP)
@@ -31,10 +30,6 @@ local function iterateRoomHeight(map,start_y,end_y,start_x,end_x,icon,addicon,it
      for i=start_y,end_y,1 do
         itwidth(map,i,start_x,end_x,icon,addicon)
     end
-end
-
-local function printIcon(map,i,j,window)
-    wmvprintw(window,i - 1,j - 1,map[i][j].icon)
 end
 
 local function addPathsToCollisionMap(map,paths)
@@ -105,7 +100,7 @@ end
 --make collision map then make the game map from that collision map
 --finally, return collision map back to main
 function makeMap(rooms)
-    GAME_MAP            = MAP:new()
+    local game_map      = MAP:new()
     local collision_map = MAP:new()
     local start,stop    = makeStartStop(rooms)
     loopMap(collision_map,addIconToMap,0)
@@ -113,15 +108,11 @@ function makeMap(rooms)
     addStartStopToCollision(collision_map,start,stop)
     local paths = makePaths(collision_map,start,stop)
     addPathsToCollisionMap(collision_map,paths)
-    loopMap(collision_map,convertCollisionToMap,GAME_MAP)
+    loopMap(collision_map,convertCollisionToMap,game_map)
     loopMap(collision_map,convertToWalkable,nil)
-  return collision_map
+  return game_map,collision_map
 end
 
 
-function printMap(window)
-   loopMap(GAME_MAP,printIcon,window) 
-   wrefresh(window)
-end
 
 

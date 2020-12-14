@@ -1,4 +1,4 @@
---File contains functions for moving hracters around the map
+--File contains functions for moving characters around the map
 
 local ncurse = require("sluacurses")
 
@@ -6,20 +6,21 @@ local FUNC_TABLE = {
     movecomp    = moveCompChar,
     visible     = isPlayerVisible,
     compturn    = compPlayerTurn,
-    checkengage = checkForEngagement
+    checkengage = checkForEngagement,
     remove      = table.remove,
     abs         = math.abs
 }
+
 local ITEM_TABLE = {
     map    = collision_map,
     finder = finder,
     player = player,
-    play   = true
+    play   = true,
     e_list = e_list
 }
 
 local function checkXY(map,x,y)
-    if map[y][x] == 4 or then
+    if map[y][x] == 4 then
        return true,x,y
    end
    return false,x,y
@@ -115,12 +116,12 @@ end
 function playerTurn(player,map,e_list)
     local input  = getch()
     local play   = true
-    if checkinput(input) == false then
+    if checkInput(input) == false then
         return playerTurn(player,map,e_list)
     end
     if input == "i" then
         return openInventory(player)
-    elseif input = "q" then
+    elseif input == "q" then
         return false
     else 
         local alive,move = movePlayer(player,map,e_list,input)

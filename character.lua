@@ -2,8 +2,8 @@
 
 local INV = require("inventory")
 
-local CHARACTER = {
-        x = nil, y = nil, health = nil, max_health = nil attack = nil, def = nil, inv = nil,icon = nil, 
+CHARACTER = {
+        x = nil, y = nil, health = nil, max_health = nil, attack = nil, def = nil, inv = nil,icon = nil, 
         name = nil, prev_def = nil, def_raised = nil, prev_attack = nil, attack_raised = nil,
         magic = nil, max_magic = nil
     }
@@ -52,6 +52,7 @@ local function makeSwordsman(rand,room)
     local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local icon    = "S"
     local name    = "Swordsman"
+    local x,y     = getXY(rand,room)
     return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
 end
 
