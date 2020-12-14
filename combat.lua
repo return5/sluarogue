@@ -1,17 +1,20 @@
+--File contains functions for fighting between player and enemy characters
+
 local Print = require("printstuff")
+local Inv   = require("inventory")
 
 local function normalAttack(rand,attacker,defender)
-    local n       = rand(0,10)
+    local n       = rand(0,12)
     local damage  = 0
     local counter = 0
     local str
-    if n < 4 then 
+    if n < 5 then 
         damage = attacker.attack - defender.defense
         str    = ("%s attacks % for % damage"):format(attacker.name,defender.name,damage)
-    elseif n < 6 then
+    elseif n < 8 then
         damage = (attacker.attack + 2) - defender.defense
         str    = ("%s scores crit attack on %s for %d damage."):format(attacker.name,defender.name,damage)
-    elseif n < 8 then
+    elseif n < 11 then
         damage = 0
         str    = ("%s missed."):format(attacker.name)
     else
@@ -22,11 +25,41 @@ local function normalAttack(rand,attacker,defender)
     applyDamage(attacker,defender,damage,counter)
 end
 
+local function compUseItems(rand,chracter)
+    if character.health < chracter.max_health / 2 then
+        if useHealthPotion(character) == false then
+            return compUseItems(rand,character)
+        else
+            return true
+        end
+    elseif character.magic < character.max_magic / 2 then
+        if useMagicPotion(character) == false then
+            return compUseItems(rand,character)
+        else
+            return true
+        end
+    elseif character.raise_def == 0 then
+        if usedefensePotion(character) == false then
+            return compUseItems(rand,character)
+        else
+            return true
+        end
+    elseif character.raise_attack == 0 then
+        if useAttackPotion(character) == false then
+            return compUseItems(rand,character)
+        else
+            return true
+        end
+    end
+    return false
+end
+
+
 local function compAttack(i,items,rand)
-    local n = rand(0,9)
-    if n < 4 then
+    local n = rand(0,10)
+    if n < 5 then
         normalAttack(rand,items.e_list[i],items.player)
-    elseif n < 7 then
+    elseif n < 8 then
         if compUseItems(rand,items.e_list[i]) == false then
             compAttack(i,items,rand)
         end
@@ -61,7 +94,7 @@ local function restoreAttack(char)
     char.attack_raised = 0
 end
 
-local function resotrePlayerAttr(player)
+local function restorCharAttr(player)
     restoreDef(player)
     restoreAttack(player)
 end
@@ -69,10 +102,12 @@ end
 local function postCombat(i,items)
     items.play = items.player.health > 0
     if items.play then
-        restorePlayerAttr(items.player)
+        restorCharAttr(items.player)
     end
     if items.e_list[i].health < 1 then
         table.remove(items.e_list,i)
+    else
+        restorCharAttr(items.e_list[i])
     end
 end
 

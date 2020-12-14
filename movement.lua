@@ -1,10 +1,28 @@
+--File contains functions for moving hracters around the map
+
 local ncurse = require("sluacurses")
 
+local FUNC_TABLE = {
+    movecomp    = moveCompChar,
+    visible     = isPlayerVisible,
+    compturn    = compPlayerTurn,
+    checkengage = checkForEngagement
+    remove      = table.remove,
+    abs         = math.abs
+}
+local ITEM_TABLE = {
+    map    = collision_map,
+    finder = finder,
+    player = player,
+    play   = true
+    e_list = e_list
+}
+
 local function checkXY(map,x,y)
-    if map[y][x] ~= 0 or then
-       return false,x,y
+    if map[y][x] == 4 or then
+       return true,x,y
    end
-   return true,x,y
+   return false,x,y
 end
 
 local function checkNewLocation(map,x,y,dir)
@@ -20,16 +38,16 @@ local function checkNewLocation(map,x,y,dir)
     return false, x,y
 end
 
-local function moveCompChar(i,item_table)
-    local path = item_table.finder:getPath(item_Table.e_list[i].x,item_Table.e_list[i].y,item_table.player.x,item_table.player.y)
+local function moveCompChar(i,items)
+    local path = items.finder:getPath(items.e_list[i].x,items.e_list[i].y,items.player.x,items.player.y)
     local x    = path._nodes[2]:getX()
     local y    = path._nodes[2].getY()
     return x,y
 end
 
-local function compPlayerTurn(i,func_table,item_table)
-    item_table.e_list[i].x,item_table.e_list[i].y = func_table.movecomp(i,item_table)
-    return func_Table.checkForEngagement(i,item_table)
+local function compPlayerTurn(i,funcs,items)
+    items.e_list[i].x,items.e_list[i].y = funcs.movecomp(i,items)
+    return func_Table.checkForEngagement(i,items)
 end
 
 local function isPlayerVisible(player,comp,abs)
@@ -41,43 +59,30 @@ local function isPlayerVisible(player,comp,abs)
     return false
 end
 
-local function enemyCharTurn(i,func_table,item_table)
-    if func_table.visible(item_table.player,item_table.e_list[i],func_table.abs) then
-       if func_table.compTurn(i,func_Table,item_table) == false then
-            func_table.remove(item_table.e_list,i)
+local function enemyCharTurn(i,funcs,items)
+    if funcs.visible(items.player,items.e_list[i],funcs.abs) then
+       if funcs.compTurn(i,func_Table,items) == false then
+            funcs.remove(items.e_list,i)
         end
     end
-    item_table.play = item_table.player.health > 0
+    items.play = items.player.health > 0
 end
 
-local function loopEnemeyList(fn,func_table,item_table)
+local function loopEnemeyList(fn,funcs,items)
     local func = fn
-    for i=#item_table.e_list,1,-1 do
-        func(i,func_table,item_table)
-        if item_table.play == false then
+    for i=#items.e_list,1,-1 do
+        func(i,funcs,items)
+        if items.play == false then
             return
         end
     end
 end
 
 function moveCompPlayers(collision_map,e_list,finder,player)
-    local func_table = {
-        movecomp    = moveCompChar,
-        visible     = isPlayerVisible,
-        compturn    = compPlayerTurn,
-        checkengage = checkForEngagement
-        remove      = table.remove,
-        abs         = math.abs
-    }
-   local item_table = {
-        map    = collision_map,
-        finder = finder,
-        player = player,
-        play   = true
-        e_list = e_list
-    }
-    loopEnemyList(enemyCharTurn,func_table,item_table)
-    return item_table.play
+    local funcs = FUNC_TABLE
+    local items = ITEM_TABLE
+    loopEnemyList(enemyCharTurn,funcs,items)
+    return items.play
 end
 
 function movePlayer(player,map,dir)
@@ -104,7 +109,7 @@ local function movePlayer(player,map,e_list,input)
     if mov == true then
         player.x = x
         player.y = y
-        
+    end 
 end
 
 function playerTurn(player,map,e_list)
@@ -116,7 +121,7 @@ function playerTurn(player,map,e_list)
     if input == "i" then
         return openInventory(player)
     elseif input = "q" then
-        return quitProgram()
+        return false
     else 
         local alive,move = movePlayer(player,map,e_list,input)
         if alive == false then
