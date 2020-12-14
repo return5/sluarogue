@@ -1,3 +1,5 @@
+--File contains functions for generating paths between rooms
+
 local function getStartStopX(rand,rooms)
     local s_x = {}
     for i=1,#rooms, 1 do

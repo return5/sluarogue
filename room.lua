@@ -1,3 +1,5 @@
+--File contains functions for generating rooms in map
+
 local ROOM   = {height = nil, width = nil,x = nil,y = nil}
 ROOM.__index = ROOM
 
