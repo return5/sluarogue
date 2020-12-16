@@ -4,6 +4,30 @@ local Rooms = require("room")
 local Move  = require("movement")
 local Printstuff = require("printstuff")
 
+COLORS = {
+    BLACK   = 1,
+    WHITE   = 2,
+    GREEN   = 3,
+    YELLOW  = 4,
+    CYAN    = 5,
+    RED     = 6,
+    MAGENTA = 7,
+    BLUE    = 8
+}
+
+local function initColors() 
+	start_color()
+	init_color(COLOR_YELLOW,700,700,98)
+	init_pair(COLORS.BLACK,COLOR_BLACK,COLOR_BLACK)   
+	init_pair(COLORS.WHITE,COLOR_WHITE,COLOR_BLACK)  
+	init_pair(COLORS.GREEN,COLOR_GREEN,COLOR_BLACK)  
+	init_pair(COLORS.YELLOW,COLOR_YELLOW,COLOR_BLACK)  
+	init_pair(COLORS.CYAN,COLOR_CYAN,COLOR_BLACK)  
+	init_pair(COLORS.RED,COLOR_RED,COLOR_BLACK)	
+	init_pair(COLORS.MAGENTA,COLOR_MAGENTA,COLOR_BLACK)
+	init_pair(COLORS.BLUE,COLOR_BLUE,COLOR_BLACK)
+end
+
 local function initNcurses()
     initscr()
     refresh()
@@ -18,7 +42,7 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
     local play            = true
     local printmap        = printMap
     local printplayer     = printPlayer
-    local printenemies    = printEnemies
+    local printenemies    = printEnemyIcons
     local playerturn      = playerTurn
     local movecompplayers = moveCompPlayers
     local refreshw        = wrefresh
@@ -48,6 +72,7 @@ local function main()
     local finder                   = getFinder(collision_map,4)
     local window                   = initNcurses()
     local player                   = makePlayer(rooms)
+    initColors()
     gameLoop(game_map,collision_map,finder,e_list,player,window)
     endwin()
 end

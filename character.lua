@@ -193,15 +193,11 @@ local function makeEnemies(num,func_table,room)
     end
 end
 
-local function populateEnemyFuncs()
-    --list of functions which create difffent enemy types
-    ENEMY_FUNCS = {
-        makeSwordsman,makeBat,makeSpearman,makeWolf,makeBear,makeMonster,makeMAge,makeRogue
-    }
-end
-
 function populateEnemyList(rooms)
-    populateEnemyFuncs()
+    ENEMY_FUNCS = {
+        makeSwordsman,makeBat,makeSpearman,makeWolf,
+        makeBear,makeMonster,makeMAge,makeRogue
+    }
     local getnumenemy = getNumberOfEnemy
     local ceil        = math.ceil
     local makeenemies = makeEnemies
