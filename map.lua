@@ -97,6 +97,14 @@ local function addRoomToMap(map,room,top,side,middle)
     itheight(map,y_limit,y_limit,room.x,x_limit,top,addicon,itwidth)
 end
 
+function makeVisible(map,y,x)
+    for i=y - 6,y + 6,1 do
+        for j=x - 6,x + 6,1 do
+            map[i][j].visible = true
+        end
+    end
+end
+
 --make collision map then make the game map from that collision map
 --finally, return collision map back to main
 function makeMap(rooms)

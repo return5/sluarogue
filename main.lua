@@ -28,14 +28,20 @@ local function initColors()
 	init_pair(COLORS.BLUE,COLOR_BLUE,COLOR_BLACK)
 end
 
-local function initNcurses()
-    initscr()
-    refresh()
-    local window  = newwin("Game",HEIGHT,WIDTH,1,1)
-    local b_win   = newwin("Border",HEIGHT + 2,WIDTH + 2,0,0)
+local function makeWindowWithBorder(name,height,width,x,y)
+    local window  = newwin(name,height,width,y,x)
+    local b_win   = newwin(name .. "_Border",height + 2,width + 2,x - 1, y - 1)
 	wborder(b_win,'|','|','-','-','+','+','+','+')
     wrefresh(b_win)
     return window
+end
+
+local function initNcurses()
+    initscr()
+    refresh()
+    local game_win = makeWindowWithBorder("GAME",HEIGHT,WIDTH,1,1)
+    local info_win = makeWindowWithBorder("INFO",4,10,WIDTH + 2,1)
+    return game_win,info_win
 end
 
 local function gameLoop(game_map,collision_map,finder,e_list,player,window)
@@ -46,10 +52,12 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
     local playerturn      = playerTurn
     local movecompplayers = moveCompPlayers
     local refreshw        = wrefresh
+    local makevisible     = makeVisible
     repeat
+        makevisible(game_map,player.y + 1, player.x + 1)
         printmap(game_map,window)
         printplayer(player,window)
-        printenemies(e_list,window)
+        printenemies(game_map,e_list,window)
         refreshw(window)
         play = playerturn(player,collision_map,e_list)
         play = movecompplayers(collision_map,e_list,finder,player)
@@ -70,10 +78,10 @@ local function main()
     local game_map, collision_map  = makeMap(rooms)
     local e_list                   = populateEnemyList(rooms)
     local finder                   = getFinder(collision_map,4)
-    local window                   = initNcurses()
+    local game_win,info_win        = initNcurses()
     local player                   = makePlayer(rooms)
     initColors()
-    gameLoop(game_map,collision_map,finder,e_list,player,window)
+    gameLoop(game_map,collision_map,finder,e_list,player,game_win)
     endwin()
 end
 main()

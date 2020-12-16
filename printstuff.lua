@@ -167,7 +167,7 @@ local function printMonsterR(game_win)
 	printMonsterSeveredHead(game_win,-1,20)
 end
 
-function printEnemyCombat(enemy_type,game_win)
+function printEnemyCombat(game_win,enemy_type)
     if enemy_Type == "S" then
         printSwordsman(game_win)
     elseif enemy_type == "B" then
@@ -191,10 +191,12 @@ function printPlayer(player,window)
     mvwprintw(window,player.y,player.x,player.icon)
 end
 
-function printEnemyIcons(e_list,window)
+function printEnemyIcons(map,e_list,window)
     local print_e = mvwprintw
     for i = 1,#e_list,1 do
-        print_e(window,e_list[i].y,e_list[i].x,e_list[i].icon)
+        if map[e_list[i].y + 1][e_list[i].x + 1].visible == true then
+            print_e(window,e_list[i].y,e_list[i].x,e_list[i].icon)
+        end
     end
 end
 
@@ -204,7 +206,9 @@ function printMap(map,window)
     local print_i   = mvwprintw
     for i = 1,#map,1 do
         for j = 1,width,1 do
-            print_i(window,i - 1,j - 1,map[i][j].icon)
+            if map[i][j].visible == true then
+                print_i(window,i - 1,j - 1,map[i][j].icon)
+            end
         end
     end
 end

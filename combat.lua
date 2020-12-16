@@ -99,6 +99,10 @@ local function restorCharAttr(player)
     restoreAttack(player)
 end
 
+local function printCombatScene(game_win,eney_type)
+    printHero(game_win)
+    printEnemyCombat(game_win,enemy_type)
+
 local function postCombat(i,items)
     items.play = items.player.health > 0
     if items.play then
@@ -111,8 +115,7 @@ local function postCombat(i,items)
     end
 end
 
-local function startCombat(i,items)
-    local printscene       = printCombatScene
+local function startCombat(i,items,game_win,info_win)
     local updateplayerinfo = updatePlayerInfo
     local compattack       = compAttack
     local getinput         = getInput
@@ -120,8 +123,8 @@ local function startCombat(i,items)
     local rand             = math.rand
     local player           = item.player
     local enemy            = item.e_list[i]
+    printCombatScene(enemy.icon)
     while play == true and player.health > 0 and enemy.health > 0 do
-        printscene(enemy)
         updateplayerinfo(player)
         play = getinput(i,items,rand) 
         if player.health > 0 and enemy.health > 0 and play then
