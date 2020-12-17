@@ -2,41 +2,29 @@
 
 local ncurse = require("sluacurses")
 
-local FUNC_TABLE = {
-    movecomp    = moveCompChar,
-    visible     = isPlayerVisible,
-    compturn    = compPlayerTurn,
-    checkengage = checkForEngagement,
-    remove      = table.remove,
-    abs         = math.abs
-}
+local FUNC_TABLE = {}
 
-local ITEM_TABLE = {
-    map    = collision_map,
-    finder = finder,
-    player = player,
-    play   = true,
-    e_list = e_list
-}
+local ITEMS = {}
+
 
 local function checkXY(map,x,y)
-    if map[y][x] == 4 then
+    if map[y + 1][x + 1] == 4 then
        return true,x,y
    end
    return false,x,y
 end
 
-local function checkNewLocation(map,x,y,dir)
+local function checkNewLocation(dir)
     if dir == "w" then
-        return checkXY(map,x - 1,y)
+        return checkXY(ITEMS.map,ITEMS.player.x,ITEMS.player.y - 1)
     elseif dir == "s" then
-        return checkXY(map,x + 1,y)
+        return checkXY(ITEMS.map,ITEMS.player.x,ITEMS.player.y + 1)
     elseif dir == "a" then
-        return checkXY(map,x,y - 1)
+        return checkXY(ITEMS.map,ITEMS.player.x - 1,ITEMS.player.y)
     elseif dir == "d" then
-        return checkXY(map,x,y + 1)
+        return checkXY(ITEMS.map,ITEMS.player.x + 1,ITEMS.player.y)
     end
-    return false, x,y
+    return false, ITEMS.player.x,ITEMS.player.y
 end
 
 local function moveCompChar(i,items)
@@ -54,7 +42,7 @@ end
 local function isPlayerVisible(player,comp,abs)
     local x_dist = abs(player.x - comp.x)
     local y_dist = abs(player.y - comp.y)
-    if x_dist <= 8 and y_dist <= 8 then
+    if x_dist <= 4 and y_dist <= 4 then
         return true
     end
     return false
@@ -62,14 +50,14 @@ end
 
 local function enemyCharTurn(i,funcs,items)
     if funcs.visible(items.player,items.e_list[i],funcs.abs) then
-       if funcs.compTurn(i,func_Table,items) == false then
+       if funcs.compturn(i,func_Table,items) == false then
             funcs.remove(items.e_list,i)
         end
     end
     items.play = items.player.health > 0
 end
 
-local function loopEnemeyList(fn,funcs,items)
+local function loopEnemyList(fn,funcs,items)
     local func = fn
     for i=#items.e_list,1,-1 do
         func(i,funcs,items)
@@ -79,60 +67,70 @@ local function loopEnemeyList(fn,funcs,items)
     end
 end
 
-function moveCompPlayers(collision_map,e_list,finder,player)
+function moveCompPlayers()
     local funcs = FUNC_TABLE
-    local items = ITEM_TABLE
+    local items = ITEMS
+    items.play  = true
     loopEnemyList(enemyCharTurn,funcs,items)
     return items.play
 end
 
-function movePlayer(player,map,dir)
-    local mov,x,y = checkNewLocation(map,player.x,player.y,dir)
-    if mov == true then
-        player.x = x
-        player.y = y
-    end
-    return mov
-end
-
 local function checkInput(input)
-    if input ~= w and input ~= s and input ~= d and input ~= a then
-        return false
+    if input == "w" or input == "s" or input == "d" or input == "a" then
+        return true
     end
-    if input ~= i and input ~= q then
-        return false
+    if input == "i" or input == "q" then
+        return true
     end
-    return true
+    return false
 end
 
-local function movePlayer(player,map,e_list,input)
-    local mov,x,y = checkNewLocation(map,player.x,player.y,input)
+local function movePlayer(input)
+    local mov,x,y = checkNewLocation(input)
     if mov == true then
-        player.x = x
-        player.y = y
+        ITEMS.player.x = x
+        ITEMS.player.y = y
     end 
+    return true,mov
 end
 
-function playerTurn(player,map,e_list)
+function playerTurn()
     local input  = getch()
-    local play   = true
+    ITEMS.play   = true
     if checkInput(input) == false then
-        return playerTurn(player,map,e_list)
-    end
-    if input == "i" then
-        return openInventory(player)
+        return ITEMS.playerTurn()
+    elseif input == "i" then
+        return openInventory(ITEMS.player)
     elseif input == "q" then
-        return false
+        ITEMS.play = false
     else 
-        local alive,move = movePlayer(player,map,e_list,input)
-        if alive == false then
-            return false
-        end
-        if move == false then
-            return playerTurn(player,map,e_list)
+       local move = movePlayer(input)
+        if move == false and ITEMS.play == true then
+            return ITEMS.playerTurn()
         end
     end
-    return true
+    return ITEMS.play
+end
+
+function makeFuncTable()
+    FUNC_TABLE = {
+        movecomp    = moveCompChar,
+        visible     = isPlayerVisible,
+        compturn    = compPlayerTurn,
+        checkengage = checkForEngagement,
+        remove      = table.remove,
+        abs         = math.abs
+        }
+end
+
+function makeItemTable(collision_map,finder,player,e_list)
+    ITEMS = {
+        map    = collision_map,
+        finder = finder,
+        player = player,
+        play   = true,
+        e_list = e_list
+    }
 end
 
 

@@ -38,6 +38,9 @@ end
 
 local function initNcurses()
     initscr()
+	noecho()	     --dont display key strokes
+	cbreak()	     --disable line buffering
+	curs_set(0)      --hide cursor
     refresh()
     local game_win = makeWindowWithBorder("GAME",HEIGHT,WIDTH,1,1)
     local info_win = makeWindowWithBorder("INFO",4,10,WIDTH + 2,1)
@@ -59,8 +62,8 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
         printplayer(player,window)
         printenemies(game_map,e_list,window)
         refreshw(window)
-        play = playerturn(player,collision_map,e_list)
-        play = movecompplayers(collision_map,e_list,finder,player)
+        play = playerturn()
+        play = movecompplayers()
     until(play == false)
 end
 
@@ -81,6 +84,8 @@ local function main()
     local game_win,info_win        = initNcurses()
     local player                   = makePlayer(rooms)
     initColors()
+    makeFuncTable()
+    makeItemTable(collision_map,finder,player,e_list)
     gameLoop(game_map,collision_map,finder,e_list,player,game_win)
     endwin()
 end

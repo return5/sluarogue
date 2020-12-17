@@ -100,7 +100,9 @@ end
 function makeVisible(map,y,x)
     for i=y - 6,y + 6,1 do
         for j=x - 6,x + 6,1 do
-            map[i][j].visible = true
+            if i > 0 and i < HEIGHT and j > 0  and j < WIDTH then
+                map[i][j].visible = true
+            end
         end
     end
 end
