@@ -3,6 +3,7 @@ local Char  = require("character")
 local Rooms = require("room")
 local Move  = require("movement")
 local Printstuff = require("printstuff")
+local Combat    = require("combat")
 
 COLORS = {
     BLACK   = 1,
@@ -28,9 +29,9 @@ local function initColors()
 	init_pair(COLORS.BLUE,COLOR_BLUE,COLOR_BLACK)
 end
 
-local function makeWindowWithBorder(name,height,width,x,y)
-    local window  = newwin(name,height,width,y,x)
-    local b_win   = newwin(name .. "_Border",height + 2,width + 2,x - 1, y - 1)
+local function makeWindowWithBorder(height,width,y,x)
+    local window  = newwin(height,width,y,x)
+    local b_win   = newwin(height + 2,width + 2,y - 1, x - 1)
 	wborder(b_win,'|','|','-','-','+','+','+','+')
     wrefresh(b_win)
     return window
@@ -42,9 +43,6 @@ local function initNcurses()
 	cbreak()	     --disable line buffering
 	curs_set(0)      --hide cursor
     refresh()
-    local game_win = makeWindowWithBorder("GAME",HEIGHT,WIDTH,1,1)
-    local info_win = makeWindowWithBorder("INFO",4,10,WIDTH + 2,1)
-    return game_win,info_win
 end
 
 local function gameLoop(game_map,collision_map,finder,e_list,player,window)
@@ -68,11 +66,30 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
 end
 
 local function makePlayer(rooms)
-    local i      = math.random(1,#rooms)
-    local x      = math.random(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
-    local y      = math.random(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
-    local player = CHARACTER:new(x,y,10,10,10,10,nil,'@',"chris")
+    local rand   = math.random
+    local i      = rand(1,#rooms)
+    local x      = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
+    local y      = rand(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
+    local health = rand(15,25)
+    local def    = rand(2,5)
+    local attack = rand(4,7)
+    local player = CHARACTER:new(x,y,health,attack,def,10,nil,'@',"chris")
     return player
+end
+
+local function testEncounter(player,e_list,map,window,prompt,info)
+    local items = {
+        window = window,
+        player = player,
+        e_list = e_list,
+        map    = map,
+        prompt = prompt,
+        info   = info,
+        play   = true
+    }
+    e_list[1].x = player.x
+    e_list[1].y = player.y
+    checkForEngagement(1,items)
 end
 
 local function main()
@@ -81,12 +98,17 @@ local function main()
     local game_map, collision_map  = makeMap(rooms)
     local e_list                   = populateEnemyList(rooms)
     local finder                   = getFinder(collision_map,4)
-    local game_win,info_win        = initNcurses()
     local player                   = makePlayer(rooms)
+    initNcurses()
     initColors()
+    local game_win   = makeWindowWithBorder(HEIGHT,WIDTH,1,1)
+    local info_win   = makeWindowWithBorder(4,12,1,WIDTH + 2)
+    local prompt_win = makeWindowWithBorder(6,WIDTH,HEIGHT + 3,1)
+    --testEncounter(player,e_list,collision_map,game_win,prompt_win,info_win)
     makeFuncTable()
-    makeItemTable(collision_map,finder,player,e_list)
+    makeItemTable(collision_map,finder,player,e_list,game_win,prompt_win,info_win)
     gameLoop(game_map,collision_map,finder,e_list,player,game_win)
+    getch()
     endwin()
 end
 main()

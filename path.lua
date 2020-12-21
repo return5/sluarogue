@@ -40,12 +40,12 @@ function makeStartStop(rooms)
     local start   = {}
     local stop    = {}
     for i=1,#start_x - 1, 1 do
-        start[i] = {start_x[i] + 1,start_y[i] + 1}
-        stop[i]  = {stop_x[i + 1] + 1,stop_y[i + 1] + 1}
+        start[i] = {start_x[i],start_y[i]}
+        stop[i]  = {stop_x[i + 1],stop_y[i + 1]}
     end
     --set the last start point to last room, and last stop to first room
-    start[#start + 1] = {start_x[#start_x] + 1,start_y[#start_y] + 1} 
-    stop[#stop + 1]   = {stop_x[1] + 1,stop_y[1] + 1}
+    start[#start + 1] = {start_x[#start_x],start_y[#start_y]} 
+    stop[#stop + 1]   = {stop_x[1],stop_y[1]}
     return start,stop
 end
 

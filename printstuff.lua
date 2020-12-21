@@ -168,13 +168,13 @@ local function printMonsterR(game_win)
 end
 
 function printEnemyCombat(game_win,enemy_type)
-    if enemy_Type == "S" then
+    if enemy_type == "S" then
         printSwordsman(game_win)
     elseif enemy_type == "B" then
         printBat(game_win)
     elseif enemy_type == "E" then
         printSpearman(game_win)
-    elseif enemy_type == "w" then
+    elseif enemy_type == "W" then
         printWolf(game_win)
     elseif enemy_type == "D" then
         printBear(game_win)
@@ -187,15 +187,46 @@ function printEnemyCombat(game_win,enemy_type)
     end 
 end
 
+function printPlayerPrompt(prompt)
+    wclear(prompt)
+    wprintw(prompt,"Player turn. select option:\n")
+    wprintw(prompt,"\t1)regular atttack.\n")
+    wprintw(prompt,"\t2)special attack.\n")
+    wprintw(prompt,"\t3)use item.\n")
+    wprintw(prompt,"\t4)run away.")
+    wrefresh(prompt)
+end
+
+function printMessagePromptWin(prompt,str)
+    wclear(prompt)
+    wprintw(prompt,str)
+    wrefresh(prompt)
+    getch()
+end
+
+function printCombatScene(game_win,enemy_type)
+    printHero(game_win)
+    printEnemyCombat(game_win,enemy_type)
+    wrefresh(game_win)
+end
+
+function updateInfoWin(player,info_win)
+    wclear(info_win)
+    wprintw(info_win,("health: %s\n"):format(player.health))
+    wprintw(info_win,("attack: %s\n"):format(player.attack))
+    wprintw(info_win,("defense: %s\n"):format(player.def))
+    wrefresh(info_win)
+end
+
 function printPlayer(player,window)
-    mvwprintw(window,player.y,player.x,player.icon)
+    mvwprintw(window,player.y - 1,player.x - 1,player.icon)
 end
 
 function printEnemyIcons(map,e_list,window)
     local print_e = mvwprintw
     for i = 1,#e_list,1 do
         if map[e_list[i].y + 1][e_list[i].x + 1].visible == true then
-            print_e(window,e_list[i].y,e_list[i].x,e_list[i].icon)
+            print_e(window,e_list[i].y - 1,e_list[i].x - 1,e_list[i].icon)
         end
     end
 end

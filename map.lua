@@ -22,7 +22,7 @@ end
 
 local function iterateRoomWidth(map,y,start_x,end_x,icon,addicon)
     for i=start_x,end_x,1 do
-        addicon(map,y + 1,i + 1,icon)
+        addicon(map,y,i,icon)
     end
 end
 

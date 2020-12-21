@@ -4,7 +4,7 @@ local INV = require("inventory")
 
 CHARACTER = {
         x = nil, y = nil, health = nil, max_health = nil, attack = nil, def = nil, inv = nil,icon = nil, 
-        name = nil, prev_def = nil, def_raised = nil, prev_attack = nil, attack_raised = nil,
+        name = nil, base_def = nil, def_raised = nil, base_attack = nil, attack_raised = nil,
         magic = nil, max_magic = nil
     }
 
@@ -21,8 +21,8 @@ function CHARACTER:new(x,y,h,a,d,m,inv,icon,name)
     self.max_health    = h
     self.attack        = a
     self.def           = d
-    self.prev_def      = d
-    self.prev_attack   = a
+    self.base_def      = d
+    self.base_attack   = a
     self.attack_raised = 0
     self.def_raised    = 0
     self.magic         = m

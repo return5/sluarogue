@@ -4,11 +4,11 @@ local ncurse = require("sluacurses")
 
 local FUNC_TABLE = {}
 
-local ITEMS = {}
+local ITEMS
 
 
 local function checkXY(map,x,y)
-    if map[y + 1][x + 1] == 4 then
+    if map[y][x] == 4 then
        return true,x,y
    end
    return false,x,y
@@ -29,14 +29,14 @@ end
 
 local function moveCompChar(i,items)
     local path = items.finder:getPath(items.e_list[i].x,items.e_list[i].y,items.player.x,items.player.y)
-    local x    = path._nodes[2]:getX()
-    local y    = path._nodes[2].getY()
+    local x    = path._nodes[2]:getX() 
+    local y    = path._nodes[2].getY() 
     return x,y
 end
 
 local function compPlayerTurn(i,funcs,items)
     items.e_list[i].x,items.e_list[i].y = funcs.movecomp(i,items)
-    return func_Table.checkForEngagement(i,items)
+    return funcs.checkForEngagement(i,items)
 end
 
 local function isPlayerVisible(player,comp,abs)
@@ -50,7 +50,7 @@ end
 
 local function enemyCharTurn(i,funcs,items)
     if funcs.visible(items.player,items.e_list[i],funcs.abs) then
-       if funcs.compturn(i,func_Table,items) == false then
+       if funcs.compturn(i,funcs,items) == false then
             funcs.remove(items.e_list,i)
         end
     end
@@ -120,16 +120,19 @@ function makeFuncTable()
         checkengage = checkForEngagement,
         remove      = table.remove,
         abs         = math.abs
-        }
+    }
 end
 
-function makeItemTable(collision_map,finder,player,e_list)
+function makeItemTable(collision_map,finder,player,e_list,window,prompt,info)
     ITEMS = {
         map    = collision_map,
         finder = finder,
         player = player,
         play   = true,
-        e_list = e_list
+        e_list = e_list,
+        window = window,
+        prompt = prompt,
+        info   = info
     }
 end
 

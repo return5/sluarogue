@@ -3,30 +3,49 @@
 local Print = require("printstuff")
 local Inv   = require("inventory")
 
-local function normalAttack(rand,attacker,defender)
+
+local function applyDamage(attacker,defender,damage,counter)
+    if damage > 0 then
+        defender.health = defender.health - damage
+    end
+    if counter > 0 then
+        attacker.health = attacker.health - counter
+    end
+    if attacker.health <= 0 or defender.health <= 0 then
+        return false
+    end
+    return true 
+end
+
+local function normalAttack(rand,attacker,defender,prompt)
     local n       = rand(0,12)
     local damage  = 0
     local counter = 0
     local str
     if n < 5 then 
-        damage = attacker.attack - defender.defense
-        str    = ("%s attacks % for % damage"):format(attacker.name,defender.name,damage)
+        damage = attacker.attack - defender.def
+        if damage <= 0 then
+            damage = 1
+        end
+        str    = ("%s attacks %s for %d damage"):format(attacker.name,defender.name,damage)
     elseif n < 8 then
-        damage = (attacker.attack + 2) - defender.defense
+        damage = (attacker.attack + 2) - defender.def
+        if damage <= 0 then
+            damage = 1
+        end
         str    = ("%s scores crit attack on %s for %d damage."):format(attacker.name,defender.name,damage)
     elseif n < 11 then
-        damage = 0
         str    = ("%s missed."):format(attacker.name)
     else
         str     = ("%s dodges and counters dealing 2 damage to %s"):format(defender.name,attacker.name)
-        damage  = 0
         counter = 2
     end
-    applyDamage(attacker,defender,damage,counter)
+    printMessagePromptWin(prompt,str)
+    return applyDamage(attacker,defender,damage,counter)
 end
 
-local function compUseItems(rand,chracter)
-    if character.health < chracter.max_health / 2 then
+local function compUseItems(rand,character,prompt)
+    if character.health < character.max_health / 2 then
         if useHealthPotion(character) == false then
             return compUseItems(rand,character)
         else
@@ -56,87 +75,88 @@ end
 
 
 local function compAttack(i,items,rand)
-    local n = rand(0,10)
+    local n     = rand(0,10)
+    local alive = true
     if n < 5 then
-        normalAttack(rand,items.e_list[i],items.player)
+        alive = normalAttack(rand,items.e_list[i],items.player,items.prompt)
     elseif n < 8 then
-        if compUseItems(rand,items.e_list[i]) == false then
-            compAttack(i,items,rand)
+        if compUseItems(rand,items.e_list[i],items.prompt) == false then
+            alive = compAttack(i,items,rand)
         end
     else
-        specialAttack(rand,items.e_list[i],items.player)
+        alive = specialAttack(rand,items.e_list[i],items.player,items.prompt)
     end
+    return alive
 end
 
-local function getInput(i,items,rand)
-    printPlayerPrompt()
-    input = getch()
+local function getPlayerInput(i,items,rand)
+    printPlayerPrompt(items.prompt)
+    local alive = true
+    input       = tonumber(getch())
     if input == 1 then
-        normalAttack(rand,items.player,items.e_list[i])
+      alive = normalAttack(rand,items.player,items.e_list[i],items.prompt)
     elseif input == 2 then
-        specialAttack(rand,items.player,items.e_list[i])
+        alive = specialAttack(rand,items.player,items.e_list[i],items.prompt)
     elseif input == 3 then
-        useItem(items)
+        alive = useItem(items,items.prompt)
     elseif input == 4 then
-        runAway(rand,items)
+        alive = runAway(rand,items,items.prompt)
     else
-        getInput(player,enemy)
+        alive = getPlayerInput(i,items,rand)
     end
+    return alive
 end
 
 local function restoreDef(char)
-    char.def        = char.pref_def
+    char.def        = char.base_def
     char.def_raised = 0
 end
 
 local function restoreAttack(char)
-    char.attack        = prev_Attack
+    char.attack        = char.base_attack
     char.attack_raised = 0
 end
 
-local function restorCharAttr(player)
-    restoreDef(player)
-    restoreAttack(player)
+local function restoreCharAttr(char)
+    restoreDef(char)
+    restoreAttack(char)
 end
-
-local function printCombatScene(game_win,eney_type)
-    printHero(game_win)
-    printEnemyCombat(game_win,enemy_type)
 
 local function postCombat(i,items)
     items.play = items.player.health > 0
     if items.play then
-        restorCharAttr(items.player)
+        restoreCharAttr(items.player)
     end
     if items.e_list[i].health < 1 then
         table.remove(items.e_list,i)
     else
-        restorCharAttr(items.e_list[i])
+        restoreCharAttr(items.e_list[i])
     end
 end
 
-local function startCombat(i,items,game_win,info_win)
-    local updateplayerinfo = updatePlayerInfo
-    local compattack       = compAttack
-    local getinput         = getInput
-    local play             = true
-    local rand             = math.rand
-    local player           = item.player
-    local enemy            = item.e_list[i]
-    printCombatScene(enemy.icon)
-    while play == true and player.health > 0 and enemy.health > 0 do
-        updateplayerinfo(player)
-        play = getinput(i,items,rand) 
-        if player.health > 0 and enemy.health > 0 and play then
-            compattack(i,items,rand)
+local function startCombat(i,items)
+    local alive      = true
+    local getinput   = getPlayerInput
+    local rand       = math.random
+    local compattack = compAttack
+    local updateinfo = updateInfoWin
+    printCombatScene(items.window,items.e_list[i].icon)
+    updateinfo(items.player,items.info)
+    repeat
+        alive = getinput(i,items,rand)
+        updateinfo(items.player,items.info)
+        if alive == true then
+            alive = compattack(i,items,rand)
         end
-    end
+        updateinfo(items.player,items.info)
+    until alive == false
     postCombat(i,items)
+    updateinfo(items.player,items.info)
 end
 
 
 function checkForEngagement(i,items)
-    local alive = true
+    items.play = true
     if items.player.x == items.e_list[i].x and
         items.player.y == items.e_list[i].y then
         startCombat(i,items)
