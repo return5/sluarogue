@@ -5,7 +5,7 @@ local INV = require("inventory")
 CHARACTER = {
         x = nil, y = nil, health = nil, max_health = nil, attack = nil, def = nil, inv = nil,icon = nil, 
         name = nil, base_def = nil, def_raised = nil, base_attack = nil, attack_raised = nil,
-        magic = nil, max_magic = nil,spec = nil, turn = nil, special = nil
+        magic = nil, max_magic = nil,spec = nil, turn = nil, special = nil,color = nil
     }
 
 CHARACTER.__index = CHARACTER
@@ -13,7 +13,7 @@ CHARACTER.__index = CHARACTER
 local ENEMY_LIST  = {}
 local ENEMY_FUNCS  --holds list of functions which make enemy types
 
-function CHARACTER:new(x,y,h,a,d,m,inv,icon,name,special)
+function CHARACTER:new(x,y,h,a,d,m,inv,icon,name,special,color)
     local self         = setmetatable({},CHARACTER) 
     self.x             = x
     self.y             = y
@@ -32,6 +32,7 @@ function CHARACTER:new(x,y,h,a,d,m,inv,icon,name,special)
     self.name          = name
     self.spec          = false
     self.turn          = 0
+    self.color         = color
     self.sepcial       = special
     return self
 end
@@ -56,8 +57,9 @@ local function makeSwordsman(rand,room)
     local icon    = "S"
     local name    = "Swordsman"
     local special = "power"
+    local color   = COLORS.BLUE
     local x,y     = getXY(rand,room)
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeBat(rand,room)
@@ -75,7 +77,8 @@ local function makeBat(rand,room)
     local icon    = "B"
     local name    = "Bat"
     local special = "defense"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.MAGENTA
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeSpearman(rand,room)
@@ -93,7 +96,8 @@ local function makeSpearman(rand,room)
     local icon    = "E"
     local name    = "Spearman"
     local special = "throw"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.YELLOW
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeWolf(rand,room)
@@ -111,7 +115,8 @@ local function makeWolf(rand,room)
     local icon    = "W"
     local name    = "Wolf"
     local special = "power"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.RED
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeBear(rand,room)
@@ -129,7 +134,8 @@ local function makeBear(rand,room)
     local icon    = "D"
     local name    = "Bear"
     local special = "power"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.YELLOW
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeMonster(rand,room)
@@ -147,7 +153,8 @@ local function makeMonster(rand,room)
     local icon    = "M"
     local name    = "Monster"
     local special = "power"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.GREEN
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeMAge(rand,room)
@@ -165,7 +172,8 @@ local function makeMAge(rand,room)
     local icon    = "V"
     local name    = "Mage"
     local special = "defense"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.BLUE
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeRogue(rand,room)
@@ -183,7 +191,8 @@ local function makeRogue(rand,room)
     local icon    = "R"
     local name    = "Rogue"
     local special = "throw"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
+    local color   = COLORS.GREEN
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function getEnemyType(rand)

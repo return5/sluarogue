@@ -220,14 +220,18 @@ function updateInfoWin(player,info_win)
 end
 
 function printPlayer(player,window)
+    wattron(window,COLOR_PAIR(COLORS.CYAN))
     mvwprintw(window,player.y - 1,player.x - 1,player.icon)
+    wattroff(window,COLOR_PAIR(COLORS.CYAN))
 end
 
 function printEnemyIcons(map,e_list,window)
     local print_e = mvwprintw
     for i = 1,#e_list,1 do
         if map[e_list[i].y + 1][e_list[i].x + 1].visible == true then
+            wattron(window,COLOR_PAIR(e_list[i].color))
             print_e(window,e_list[i].y - 1,e_list[i].x - 1,e_list[i].icon)
+            wattroff(window,COLOR_PAIR(e_list[i].color))
         end
     end
 end
