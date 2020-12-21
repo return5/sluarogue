@@ -205,6 +205,7 @@ function printMessagePromptWin(prompt,str)
 end
 
 function printCombatScene(game_win,enemy_type)
+    wclear(game_win)
     printHero(game_win)
     printEnemyCombat(game_win,enemy_type)
     wrefresh(game_win)

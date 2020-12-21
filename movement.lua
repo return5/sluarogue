@@ -1,6 +1,7 @@
 --File contains functions for moving characters around the map
 
 local ncurse = require("sluacurses")
+local combat = require("combat")
 
 local FUNC_TABLE = {}
 
@@ -30,13 +31,13 @@ end
 local function moveCompChar(i,items)
     local path = items.finder:getPath(items.e_list[i].x,items.e_list[i].y,items.player.x,items.player.y)
     local x    = path._nodes[2]:getX() 
-    local y    = path._nodes[2].getY() 
+    local y    = path._nodes[2]:getY() 
     return x,y
 end
 
 local function compPlayerTurn(i,funcs,items)
     items.e_list[i].x,items.e_list[i].y = funcs.movecomp(i,items)
-    return funcs.checkForEngagement(i,items)
+    return funcs.checkengage(i,items)
 end
 
 local function isPlayerVisible(player,comp,abs)

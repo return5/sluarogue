@@ -62,7 +62,7 @@ function getFinder(collision_map,walkable)
     local Pf       = require ("jumper.pathfinder") 
     local Grid     = require("jumper.grid")
     local grid     = Grid(collision_map)
-    local finder   = Pf(grid,'DIJKSTRA',0)
+    local finder   = Pf(grid,'DIJKSTRA',walkable)
     finder:setMode("ORTHOGONAL")
     return finder
 end
