@@ -77,6 +77,26 @@ local function printSpearman(game_win)
 	mvwprintw(game_win,15,30,"/   \\") --lower legs
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 end
+local function printSkeleton(game_win) 
+	wattron(game_win,COLOR_PAIR(COLORS.CYAN))
+	mvwprintw(game_win,10,26,"|") --sword handle
+	mvwprintw(game_win,11,26,"|") --sword handle
+	wattroff(game_win,COLOR_PAIR(COLORS.CYAN))
+	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
+	mvwprintw(game_win,10,25,"-") --handgaurd
+	mvwprintw(game_win,10,27,"-") --handgaurd
+	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
+	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
+	mvwprintw(game_win,7,26,"|") --sword blade
+	mvwprintw(game_win,8,26,"|") --sword blade
+	mvwprintw(game_win,9,26,"|") --sword blade
+	mvwprintw(game_win,10,29,"0") --head
+	mvwprintw(game_win,11,27,"--|") --upper torso and arms
+	mvwprintw(game_win,12,29,"|") --lower torso
+	mvwprintw(game_win,13,28,"/ \\") --leg
+	mvwprintw(game_win,14,27,"/   \\") --lower leg
+	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
+end
 
  local function printWolf(game_win) 
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
@@ -134,6 +154,7 @@ local function printMonsterBody(game_win)
 	mvwprintw(game_win,12,28,"/      \\")
 	mvwprintw(game_win,13,27,"/        \\")
 	mvwprintw(game_win,14,26,"/          \\")
+    wattroff(game_win,COLOR_:AIR(COLORS.YELLOW))
 end
 
 local function printMonsterSeveredHead(game_win,y,x) 
@@ -177,7 +198,7 @@ function printEnemyCombat(game_win,enemy_type)
     elseif enemy_type == "W" then
         printWolf(game_win)
     elseif enemy_type == "D" then
-        printBear(game_win)
+        printSkeleton(game_win)
     elseif enemy_type == "M" then
         printMonster(game_win)
     elseif enemy_type == "v" then

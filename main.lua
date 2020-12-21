@@ -78,15 +78,36 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
     until(play == false)
 end
 
+local function getSpecial(rand)
+    local n = rand(0,2)
+    if n == 0 then
+        return "power"
+    elseif n == 1 then
+        return "throw"
+    elseif n == 2 then
+        return "defense"
+    end
+    return nil
+end
+
+local function getName()
+    io.write("Please enter your name:\n")
+    local str = io.read("*line")
+    return str
+end
+
 local function makePlayer(rooms)
-    local rand   = math.random
-    local i      = rand(1,#rooms)
-    local x      = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
-    local y      = rand(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
-    local health = rand(15,25)
-    local def    = rand(2,5)
-    local attack = rand(4,7)
-    local player = CHARACTER:new(x,y,health,attack,def,10,nil,'@',"chris")
+    local rand    = math.random
+    local i       = rand(1,#rooms)
+    local x       = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
+    local y       = rand(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
+    local health  = rand(15,25)
+    local def     = rand(2,5)
+    local attack  = rand(4,7)
+    local name    = getName()
+    local special = getSpecial(rand)
+    local color   = COLORS.CYAN
+    local player  = CHARACTER:new(x,y,health,attack,def,10,nil,'@',name,special,color)
     return player
 end
 

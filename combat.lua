@@ -182,6 +182,41 @@ local function compAttack(i,items,rand)
     return alive
 end
 
+local function findValidLocation(items)
+    local locations = {}
+    for i=items.player.y - 2,items.player.y + 2,1 do
+        for j = items.player.x - 2,items.player.x + 2,1 do
+            if items.map[i][j] == 4 and i ~= items.player.y and j ~= items.player.x then
+                table.insert(locations,{i,j})
+            end
+        end
+    end
+    return locations
+end
+
+local function playerRunAway(items,rand)
+    local locations = findValidLocation(items)
+    local i         = rand(1,#locations)
+    items.player.y  = locations[i][1]
+    items.player.x  = locations[i][2]
+end
+
+local function runAway(rand,items)
+    local n = rand(0,9)
+    local str
+    local success
+    if n < 6 then
+        playerRunAway(items,rand)
+        str = ("%s ran away from the battle."):format(items.player.name)
+        success = true
+    else
+        str = ("%s tried to run away but failed."):format(items.player.name)
+        success = false
+    end
+    printMessagePromptWin(items.prompt,str)
+    return not success
+end
+
 local function getPlayerInput(i,items,rand)
     printPlayerPrompt(items.prompt)
     local alive = true
@@ -191,9 +226,9 @@ local function getPlayerInput(i,items,rand)
     elseif input == 2 then
         alive = specialAttack(rand,items.player,items.e_list[i],items.prompt)
     elseif input == 3 then
-        alive = useItem(items,items.prompt)
+        alive = useItem(items)
     elseif input == 4 then
-        alive = runAway(rand,items,items.prompt)
+        alive = runAway(rand,items)
     else
         alive = getPlayerInput(i,items,rand)
     end
@@ -244,7 +279,7 @@ local function startCombat(i,items)
             alive = compattack(i,items,rand)
         end
         updateinfo(items.player,items.info)
-    until alive == false
+    until (alive == false)
     postCombat(i,items)
     updateinfo(items.player,items.info)
 end

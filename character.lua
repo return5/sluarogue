@@ -119,7 +119,7 @@ local function makeWolf(rand,room)
     return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
-local function makeBear(rand,room)
+local function makeSkeleton(rand,room)
     local health  = rand(10,20)
     local attack  = rand(4,7)
     local defense = rand(3,5)
@@ -132,7 +132,7 @@ local function makeBear(rand,room)
     local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "D"
-    local name    = "Bear"
+    local name    = "Skeleton"
     local special = "power"
     local color   = COLORS.YELLOW
     return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
@@ -216,7 +216,7 @@ end
 function populateEnemyList(rooms)
     ENEMY_FUNCS = {
         makeSwordsman,makeBat,makeSpearman,makeWolf,
-        makeBear,makeMonster,makeMAge,makeRogue
+        makeSkeleton,makeMonster,makeMAge,makeRogue
     }
     local getnumenemy = getNumberOfEnemy
     local ceil        = math.ceil

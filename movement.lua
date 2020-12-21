@@ -61,7 +61,11 @@ end
 local function loopEnemyList(fn,funcs,items)
     local func = fn
     for i=#items.e_list,1,-1 do
-        func(i,funcs,items)
+        if funcs == nil then
+            func(i,items)
+        else
+            func(i,funcs,items)
+        end
         if items.play == false then
             return
         end
@@ -99,7 +103,7 @@ function playerTurn()
     local input  = getch()
     ITEMS.play   = true
     if checkInput(input) == false then
-        return ITEMS.playerTurn()
+        return playerTurn()
     elseif input == "i" then
         return openInventory(ITEMS.player)
     elseif input == "q" then
@@ -107,7 +111,10 @@ function playerTurn()
     else 
        local move = movePlayer(input)
         if move == false and ITEMS.play == true then
-            return ITEMS.playerTurn()
+            return playerTurn()
+        end
+        if ITEMS.play == true then
+           loopEnemyList(checkForEngagement,nil,ITEMS) 
         end
     end
     return ITEMS.play
