@@ -51,11 +51,14 @@ end
 
 local function makePath(finder,start,stop,additem)
     local my_path = finder:getPath(start[1],start[2],stop[1],stop[2])
-    local path    = {}
-    for node,_ in my_path:nodes() do
-        additem(path,{node:getX(),node:getY()})
+    if my_path then
+        local path = {}
+        for node,_ in my_path:nodes() do
+            additem(path,{node:getX(),node:getY()})
+        end
+        return path
     end
-    return path
+    return false
 end
 
 function getFinder(collision_map,walkable)
@@ -73,7 +76,11 @@ function makePaths(map,start,stop)
     local additem  = table.insert
     local finder   = getFinder(map,0)
     for i=1,#start,1 do
-        additem(paths,makepath(finder,start[i],stop[i],additem))
+        local path = makepath(finder,start[i],stop[i],additem)
+        if path == false then
+            return false
+        end
+        additem(paths,path)
     end
     return paths
 end

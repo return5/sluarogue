@@ -45,6 +45,19 @@ local function initNcurses()
     refresh()
 end
 
+local function makeMaps()
+   local rooms,collision_map
+   local keep_trying = true
+   repeat
+        rooms,collision_map        = nil
+        rooms                      = makeRooms(8)
+        keep_trying, collision_map = makeMap(rooms)
+    until(keep_trying == false)
+    game_map      = makeGameMap(collision_map)
+    collision_map = updateCollisionMap(collision_map)
+    return {rooms,game_map,collision_map}
+end
+
 local function gameLoop(game_map,collision_map,finder,e_list,player,window)
     local play            = true
     local printmap        = printMap
@@ -94,11 +107,10 @@ end
 
 local function main()
     math.randomseed(os.time())
-    local rooms                    = makeRooms(8)
-    local game_map, collision_map  = makeMap(rooms)
-    local e_list                   = populateEnemyList(rooms)
-    local finder                   = getFinder(collision_map,4)
-    local player                   = makePlayer(rooms)
+    local maps     = makeMaps()
+    local e_list   = populateEnemyList(maps[1])
+    local finder   = getFinder(maps[3],4)
+    local player   = makePlayer(maps[1])
     initNcurses()
     initColors()
     local game_win   = makeWindowWithBorder(HEIGHT,WIDTH,1,1)
@@ -106,8 +118,8 @@ local function main()
     local prompt_win = makeWindowWithBorder(6,WIDTH,HEIGHT + 3,1)
     --testEncounter(player,e_list,collision_map,game_win,prompt_win,info_win)
     makeFuncTable()
-    makeItemTable(collision_map,finder,player,e_list,game_win,prompt_win,info_win)
-    gameLoop(game_map,collision_map,finder,e_list,player,game_win)
+    makeItemTable(maps[3],finder,player,e_list,game_win,prompt_win,info_win)
+    gameLoop(maps[2],maps[3],finder,e_list,player,game_win)
     getch()
     endwin()
 end

@@ -219,12 +219,14 @@ local function postCombat(i,items)
     items.play = items.player.health > 0
     if items.play then
         restoreCharAttr(items.player)
+        if items.e_list[i].health < 1 then
+            table.remove(items.e_list,i)
+        else
+            restoreCharAttr(items.e_list[i])
+        end
     end
-    if items.e_list[i].health < 1 then
-        table.remove(items.e_list,i)
-    else
-        restoreCharAttr(items.e_list[i])
-    end
+    wclear(items.window)
+    wclear(items.prompt)
 end
 
 local function startCombat(i,items)

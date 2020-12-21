@@ -110,19 +110,27 @@ end
 --make collision map then make the game map from that collision map
 --finally, return collision map back to main
 function makeMap(rooms)
-    local game_map      = MAP:new()
     local collision_map = MAP:new()
     local start,stop    = makeStartStop(rooms)
     loopMap(collision_map,addIconToMap,0)
     loopRooms(collision_map,rooms,addRoomToMap,1,2,3)
     addStartStopToCollision(collision_map,start,stop)
     local paths = makePaths(collision_map,start,stop)
+    if paths == false then
+        return true,nil
+    end
     addPathsToCollisionMap(collision_map,paths)
-    loopMap(collision_map,convertCollisionToMap,game_map)
-    loopMap(collision_map,convertToWalkable,nil)
-  return game_map,collision_map
+  return false,collision_map
 end
 
+function makeGameMap(collision_map)
+    local game_map = MAP:new()
+    loopMap(collision_map,convertCollisionToMap,game_map)
+    return game_map
+end
 
-
+function updateCollisionMap(collision_map)
+    loopMap(collision_map,convertToWalkable,nil)    
+    return collision_map
+end
 
