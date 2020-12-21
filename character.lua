@@ -5,7 +5,7 @@ local INV = require("inventory")
 CHARACTER = {
         x = nil, y = nil, health = nil, max_health = nil, attack = nil, def = nil, inv = nil,icon = nil, 
         name = nil, base_def = nil, def_raised = nil, base_attack = nil, attack_raised = nil,
-        magic = nil, max_magic = nil
+        magic = nil, max_magic = nil,spec = nil, turn = nil, special = nil
     }
 
 CHARACTER.__index = CHARACTER
@@ -13,7 +13,7 @@ CHARACTER.__index = CHARACTER
 local ENEMY_LIST  = {}
 local ENEMY_FUNCS  --holds list of functions which make enemy types
 
-function CHARACTER:new(x,y,h,a,d,m,inv,icon,name)
+function CHARACTER:new(x,y,h,a,d,m,inv,icon,name,special)
     local self         = setmetatable({},CHARACTER) 
     self.x             = x
     self.y             = y
@@ -30,6 +30,9 @@ function CHARACTER:new(x,y,h,a,d,m,inv,icon,name)
     self.inv           = inv
     self.icon          = icon
     self.name          = name
+    self.spec          = false
+    self.turn          = 0
+    self.sepcial       = special
     return self
 end
 
@@ -52,8 +55,9 @@ local function makeSwordsman(rand,room)
     local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local icon    = "S"
     local name    = "Swordsman"
+    local special = "power"
     local x,y     = getXY(rand,room)
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeBat(rand,room)
@@ -70,7 +74,8 @@ local function makeBat(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "B"
     local name    = "Bat"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "defense"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeSpearman(rand,room)
@@ -87,7 +92,8 @@ local function makeSpearman(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "E"
     local name    = "Spearman"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "throw"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeWolf(rand,room)
@@ -104,7 +110,8 @@ local function makeWolf(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "W"
     local name    = "Wolf"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "power"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeBear(rand,room)
@@ -121,7 +128,8 @@ local function makeBear(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "D"
     local name    = "Bear"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "power"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeMonster(rand,room)
@@ -138,7 +146,8 @@ local function makeMonster(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "M"
     local name    = "Monster"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "power"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeMAge(rand,room)
@@ -155,7 +164,8 @@ local function makeMAge(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "V"
     local name    = "Mage"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "defense"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function makeRogue(rand,room)
@@ -172,7 +182,8 @@ local function makeRogue(rand,room)
     local x,y     = getXY(rand,room)
     local icon    = "R"
     local name    = "Rogue"
-    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name)
+    local special = "throw"
+    return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special)
 end
 
 local function getEnemyType(rand)
