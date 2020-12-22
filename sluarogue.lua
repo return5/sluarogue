@@ -6,6 +6,7 @@ local Ncurs  = require("auxillary.ncurses")
 
 local function gameLoop(game_map,collision_map,finder,e_list,player,window)
     local play            = true
+    local new_level       = false
     local printmap        = printMap
     local printplayer     = printPlayer
     local printenemies    = printEnemyIcons
@@ -19,7 +20,7 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
         printplayer(player,window)
         printenemies(game_map,e_list,window)
         refreshw(window)
-        play = playerturn()
+        play,new_level = playerturn()
         if play == true then
             play = movecompplayers()
         end
@@ -31,7 +32,8 @@ local function main()
     local maps     = createMaps()
     local e_list   = populateEnemyList(maps[1])
     local finder   = getFinder(maps[3],4)
-    local player   = makePlayer(maps[1])
+    local player,i = makePlayer(maps[1])
+    makeExit(maps,i)
     initNcurses()
     initColors()
     local game_win   = makeWindowWithBorder(HEIGHT,WIDTH,1,1)

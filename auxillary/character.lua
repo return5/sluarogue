@@ -223,6 +223,6 @@ function makePlayer(rooms)
     local inv     = makeInventory(1,1,1,1,1,1,1,1,1,1,rand)
     local color   = COLORS.CYAN
     local player  = CHARACTER:new(x,y,health,attack,def,10,inv,'@',name,special,color)
-    return player
+    return player,i
 end
 

@@ -148,3 +148,15 @@ function createMaps()
     return {rooms,game_map,collision_map}
 end
 
+function makeExit(maps,i)
+    local r
+    local rand = math.random
+    repeat
+        r = rand(1,#maps[1])
+    until(r ~- i)
+    local room = maps[i][r]
+    local x    = rand(room.x + 1,room.x + room.width - 1)
+    local y    = rand(room.y + 1,room.y + room.height - 1)
+    maps[2][y][x].icon = '&' 
+end
+
