@@ -41,7 +41,7 @@ local function raiseMAgic(character,value)
 end
 
 function useDefensePotion(character,prompt)
-    if character.inv.dp > 0 and character.def_Raised == 0 then
+    if character.def_Raised == 0 then
         local value = 2
         raiseDefense(character,value)
         character.inv.dp = character.inv.dp - 1
@@ -53,7 +53,7 @@ function useDefensePotion(character,prompt)
 end
 
 function useAttackPotion(character,prompt)
-    if character.inv.ap > 0 and character.attack_Raised == 0 then
+    if character.attack_Raised == 0 then
         local value = 2
         raiseAttack(character,value)
         character.inv.ap = character.inv.ap - 1
@@ -65,27 +65,27 @@ function useAttackPotion(character,prompt)
 end
 
 function useHealthPotion(character,prompt)
-    if character.inv.hp > 0  then
-        local value = math.random(7,12)
-        raiseHealth(character,value)
-        character.inv.hp = character.inv.hp - 1
-        local str = ("%s uses a health potion. restores their health %d points."):format(character.name,value)
-        printMessagePromptWin(prompt,str)
-        return true
-    end
-    return false
+    local value = math.random(7,12)
+    raiseHealth(character,value)
+    character.inv.hp = character.inv.hp - 1
+    local str = ("%s uses a health potion. restores their health %d points."):format(character.name,value)
+    printMessagePromptWin(prompt,str)
 end
 
 function useMagicPotion(character,prompt)
-    if character.inv.mp > 0  then
-        local value = math.random(7,12)
-        raiseMAgic(character,value)
-        character.inv.mp = character.inv.mp - 1
+    local value = math.random(7,12)
+    raiseMAgic(character,value)
+    character.inv.mp = character.inv.mp - 1
     local str = ("%s uses a magic potion. restores their magic %d points."):format(character.name,value)
     printMessagePromptWin(prompt,str)
-        return true
-    end
-    return false
 end
 
+function makeInventory(h_p_low,h_p_high,gold_low,gold_high,m_p_low,m_p_high,d_p_low,d_p_high,a_p_low,a_p_high,rand)
+    local h_p  = rand(h_p_low,h_p_high)
+    local gold = rand(gold_low,gold_high)
+    local m_p  = rand(m_p_low,m_p_high)
+    local d_p  = rand(d_p_low,d_p_high)
+    local a_p  = rand(a_p_low,a_p_high)
+    return INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+end
 

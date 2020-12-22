@@ -43,16 +43,6 @@ local function getXY(rand,room)
     return x,y
 end
 
-
-local function makeInventory(h_p_low,h_p_high,gold_low,gold_high,m_p_low,m_p_high,d_p_low,d_p_high,a_p_low,a_p_high,rand)
-    local h_p  = rand(h_p_low,h_p_high)
-    local gold = rand(gold_low,gold_high)
-    local m_p  = rand(m_p_low,m_p_high)
-    local d_p  = rand(d_p_low,d_p_high)
-    local a_p  = rand(a_p_low,a_p_high)
-    return INVENTORY:new(h_p,gold,m_p,d_p,a_p)
-end
-
 local function makeSwordsman(rand,room)
     local health  = rand(9,15)
     local attack  = rand(4,6)
@@ -87,7 +77,6 @@ local function makeSpearman(rand,room)
     local defense = rand(1,3)
     local magic   = 0
     local inv     = makeInventory(0,4,0,250,0,4,0,4,0,4,rand)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "E"
     local name    = "Spearman"
@@ -202,3 +191,38 @@ function populateEnemyList(rooms)
     end
     return ENEMY_LIST
 end
+
+function getSpecial(rand)
+    local n = rand(0,2)
+    if n == 0 then
+        return "power"
+    elseif n == 1 then
+        return "throw"
+    elseif n == 2 then
+        return "defense"
+    end
+    return nil
+end
+
+function getName()
+    io.write("Please enter your name:\n")
+    local str = io.read("*line")
+    return str
+end
+
+function makePlayer(rooms)
+    local rand    = math.random
+    local i       = rand(1,#rooms)
+    local x       = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
+    local y       = rand(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
+    local health  = rand(18,25)
+    local def     = rand(2,4)
+    local attack  = rand(6,9)
+    local name    = getName()
+    local special = getSpecial(rand)
+    local inv     = makeInventory(1,1,1,1,1,1,1,1,1,1,rand)
+    local color   = COLORS.CYAN
+    local player  = CHARACTER:new(x,y,health,attack,def,10,inv,'@',name,special,color)
+    return player
+end
+

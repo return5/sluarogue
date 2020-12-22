@@ -55,19 +55,20 @@ local function enemyCharTurn(i,funcs,items)
             funcs.remove(items.e_list,i)
         end
     end
-    items.play = items.player.health > 0
+    return items.player.health > 0
 end
 
 local function loopEnemyList(fn,funcs,items)
     local func = fn
+    local play = true
     for i=#items.e_list,1,-1 do
         if funcs == nil then
-            func(i,items)
+            play = func(i,items)
         else
-            func(i,funcs,items)
+            play = func(i,funcs,items)
         end
-        if items.play == false then
-            return
+        if play == false then
+            return false
         end
     end
 end
@@ -75,9 +76,8 @@ end
 function moveCompPlayers()
     local funcs = FUNC_TABLE
     local items = ITEMS
-    items.play  = true
-    loopEnemyList(enemyCharTurn,funcs,items)
-    return items.play
+    local play  = true
+    return loopEnemyList(enemyCharTurn,funcs,items)
 end
 
 local function checkInput(input)
@@ -99,25 +99,34 @@ local function movePlayer(input)
     return true,mov
 end
 
+function confirmChoice(prompt)
+    printMessagePromptWin(prompt,"are you sure you wish to exit?(y/n)",false)
+    if getch() == "y" then
+        return true
+    else
+        return true
+    end
+end
+
 function playerTurn()
     local input  = getch()
-    ITEMS.play   = true
+    local play   = true
     if checkInput(input) == false then
         return playerTurn()
     elseif input == "i" then
         return openInventory(ITEMS.player)
-    elseif input == "q" then
-        ITEMS.play = false
+    elseif input == "q" and confirmChoice(ITEMS.prompt) == true then
+        play = false
     else 
        local move = movePlayer(input)
-        if move == false and ITEMS.play == true then
+        if move == false and play == true then
             return playerTurn()
         end
-        if ITEMS.play == true then
-           loopEnemyList(checkForEngagement,nil,ITEMS) 
+        if play == true then
+           play = loopEnemyList(checkForEngagement,nil,ITEMS) 
         end
     end
-    return ITEMS.play
+    return play
 end
 
 function makeFuncTable()
@@ -136,7 +145,6 @@ function makeItemTable(collision_map,finder,player,e_list,window,prompt,info)
         map    = collision_map,
         finder = finder,
         player = player,
-        play   = true,
         e_list = e_list,
         window = window,
         prompt = prompt,

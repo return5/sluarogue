@@ -139,25 +139,19 @@ local function normalAttack(rand,attacker,defender,prompt)
 end
 
 local function compUseItems(rand,character,prompt)
-    if character.health < (character.max_health / 2) then
-        if useHealthPotion(character,prompt) == false then
-            return compUseItems(rand,character)
-        else
-            return true
-        end
-    elseif character.magic < (character.max_magic / 2) then
-        if useMagicPotion(character,prompt) == false then
-            return compUseItems(rand,character)
-        else
-            return true
-        end
-    elseif character.raise_def == 0 then
+    if character.health < (character.max_health / 2) and character.inv.hp > 0 then
+        useHealthPotion(character,prompt)
+        return true
+    elseif character.magic < (character.max_magic / 2) and character.inv.mp > 0 then
+        useMagicPotion(character,prompt)
+        return true
+    elseif character.raise_def == 0 and character.inv.dp > 0 then
         if usedefensePotion(character,prompt) == false then
             return compUseItems(rand,character)
         else
             return true
         end
-    elseif character.raise_attack == 0 then
+    elseif character.raise_attack == 0 and character.inv.ap > 0 then
         if useAttackPotion(character,prompt) == false then
             return compUseItems(rand,character)
         else
@@ -167,31 +161,30 @@ local function compUseItems(rand,character,prompt)
     return false
 end
 
-
-local function compAttack(i,items,rand)
+local function compAttack(map,comp,player,prompt,rand)
     local n     = rand(0,10)
     local alive = true
     if n < 5 then
-        alive = normalAttack(rand,items.e_list[i],items.player,items.prompt)
+        alive = normalAttack(rand,comp,player,prompt)
     elseif n < 8 then
-        if compUseItems(rand,items.e_list[i],items.prompt) == false then
-            alive = compAttack(i,items,rand)
+        if compUseItems(rand,comp,prompt) == false then
+            return compAttack(map,comp,player,prompt,rand)
         end
     else
-        if items.e_list[i].spec == false then
-            alive = useSpecialAttack(items.e_list[i],items.player,rand,items.prompt)
+        if comp.spec == false then
+            alive = useSpecialAttack(comp,player,rand,prompt)
         else
-            alive = compAttack(i,items,rand)
+            return compAttack(map,comp,player,prompt,rand)
         end
     end
     return alive
 end
 
-local function findValidLocation(items)
+local function findValidLocation(map,player)
     local locations = {}
-    for i=items.player.y - 2,items.player.y + 2,1 do
-        for j = items.player.x - 2,items.player.x + 2,1 do
-            if items.map[i][j] == 4 and i ~= items.player.y and j ~= items.player.x then
+    for i=player.y - 2,player.y + 2,1 do
+        for j = player.x - 2,player.x + 2,1 do
+            if map[i][j] == 4 and i ~= player.y and j ~= player.x then
                 table.insert(locations,{i,j})
             end
         end
@@ -199,50 +192,88 @@ local function findValidLocation(items)
     return locations
 end
 
-local function playerRunAway(items,rand)
-    local locations = findValidLocation(items)
+local function playerRunAway(map,player,rand)
+    local locations = findValidLocation(map,player)
     local i         = rand(1,#locations)
-    items.player.y  = locations[i][1]
-    items.player.x  = locations[i][2]
+    player.y        = locations[i][1]
+    player.x        = locations[i][2]
 end
 
-local function runAway(rand,items)
+local function runAway(map,player,prompt,rand)
     local n = rand(0,9)
     local str
     local success
     if n < 6 then
-        playerRunAway(items,rand)
-        str = ("%s ran away from the battle."):format(items.player.name)
+        playerRunAway(map,player,rand)
+        str = ("%s ran away from the battle."):format(player.name)
         success = true
     else
-        str = ("%s tried to run away but failed."):format(items.player.name)
+        str     = ("%s tried to run away but failed."):format(player.name)
         success = false
     end
-    printMessagePromptWin(items.prompt,str)
+    printMessagePromptWin(prompt,str)
     return not success
 end
 
-local function getPlayerInput(i,items,rand)
-    printPlayerPrompt(items.prompt)
+local function getPlayerInput(map,player,comp,prompt,rand)
+    printPlayerPrompt(player.name,prompt)
     local alive = true
     input       = tonumber(getch())
     if input == 1 then
-      alive = normalAttack(rand,items.player,items.e_list[i],items.prompt)
+      alive = normalAttack(rand,player,comp,prompt)
     elseif input == 2 then
-        if items.player.spec == false then
-            alive = useSpecialAttack(items.player,items.e_list[i],rand,items.prompt)
+        if player.spec == false then
+            alive = useSpecialAttack(player,comp,rand,prompt)
         else
-            printMessagePromptWin(items.prompt,"Sorry, you have already used your special this battle.")
-            alive = getPlayerInput(i,items,rand)
+            printMessagePromptWin(prompt,"Sorry, you have already used your special this battle.")
+            return getPlayerInput(player,comp,prompt,rand)
         end
     elseif input == 3 then
-        alive = useItem(items)
+        alive = useItem(player)
     elseif input == 4 then
-        alive = runAway(rand,items)
+        alive = runAway(rand,player)
     else
-        alive = getPlayerInput(i,items,rand)
+        return getPlayerInput(player,comp,prompt,rand)
     end
     return alive
+end
+
+local function pickUpInventoryItems(player,enemy,prompt,rand)
+    local pickedup = 0
+    local str      = ("%s picked up items dropped by %s.\nitems picked up:"):format(player.name,enemy.name) 
+    local hp       = rand(0,enemy.inv.hp)
+    local dp       = rand(0,enemy.inv.dp)
+    local mp       = rand(0,enemy.inv.mp)
+    local gold     = rand(0,enemy.inv.gold)
+    local ap       = rand(0,enemy.inv.ap)
+    if hp > 0  then
+        player.inv.hp = player.inv.hp + hp
+        pickedup      = pickedup + hp
+        str           = str .. ("\nhealth potion: %d"):format(hp)
+    end
+    if dp > 0  then
+        player.inv.dp = player.inv.dp + dp
+        pickedup      = pickedup + dp
+        str           = str .. ("\ndefense potion: %d"):format(dp)
+    end
+    if mp > 0  then
+        player.inv.mp = player.inv.mp + mp
+        pickedup      = pickedup + mp
+        str           = str .. ("\nmagic potion: %d"):format(mp)
+    end
+    if gold > 0  then
+        player.inv.gold = player.inv.gold + gold
+        pickedup        = pickedup + gold
+        str             = str .. ("\ngold: %d"):format(gold)
+    end
+    if ap > 0  then
+        player.inv.ap = player.inv.ap + ap
+        pickedup      = pickedup + ap
+        str           = str .. ("\nattack potion: %d"):format(ap)
+    end
+    if pickedup > 0 then
+        printMessagePromptWin(prompt,str)
+    end
 end
 
 local function restoreDef(char)
@@ -262,18 +293,19 @@ local function restoreCharAttr(char)
     char.turn = 0
 end
 
-local function postCombat(i,items)
-    items.play = items.player.health > 0
-    if items.play then
-        restoreCharAttr(items.player)
-        if items.e_list[i].health < 1 then
-            table.remove(items.e_list,i)
+local function postCombat(i,player,e_list,window,prompt,rand)
+    play = player.health > 0
+    if play then
+        restoreCharAttr(player)
+        if e_list[i].health < 1 then
+            pickUpInventoryItems(player,e_list[i],prompt,rand)
+            table.remove(e_list,i)
         else
-            restoreCharAttr(items.e_list[i])
+            restoreCharAttr(e_list[i])
         end
     end
-    wclear(items.window)
-    wclear(items.prompt)
+    wclear(window)
+    wclear(prompt)
 end
 
 local function missedTurn(prompt,char)
@@ -282,36 +314,49 @@ local function missedTurn(prompt,char)
     printMessagePromptWin(prompt,str)
 end
 
+local function combatTurn(map,rand,attacker,defender,prompt,charturn,missturn)
+    local alive = true
+    if attacker.turn > 0 then
+        missturn(prompt,attacker)
+    else
+        alive = charturn(map,attacker,defender,prompt,rand)
+    end
+    return alive
+end
+    
+local function flipJ(j)
+    if j == 1 then
+        j = 2
+    else
+        j = 1
+    end
+    return j
+end
+
 local function startCombat(i,items)
     local alive      = true
     local getinput   = getPlayerInput
     local rand       = math.random
     local compattack = compAttack
+    local getinput   = getPlayerInput
     local updateinfo = updateInfoWin
     local missturn   = missedTurn
+    local combatturn = combatTurn
+    local funcs      = {getinput,compattack}
+    local attacker   = {items.player,items.e_list[i]}
+    local defender   = {items.e_list[i],items.player}
+    local j          = 1
+    local flipj      = flipJ
     printCombatScene(items.window,items.e_list[i].icon)
     updateinfo(items.player,items.info)
     repeat
-        if items.player.turn > 0 then
-            missturn(items.prompt,items.player)
-        else
-            alive = getinput(i,items,rand)
-            updateinfo(items.player,items.info)
-        end
-        if alive == true then
-            if items.e_list[i].turn > 0 then
-                missturn(items.prompt,items.e_list[i])
-            else
-                alive = compattack(i,items,rand)
-            end
-        end
-        printMessagePromptWin(items.prompt,tostring(items.e_list[i].health))
+        alive = combatturn(items.map,rand,attacker[j],defender[j],items.prompt,funcs[j],missturn)
+        j     = flipj(j)
         updateinfo(items.player,items.info)
     until (alive == false)
-    postCombat(i,items)
+    postCombat(i,items.player,items.e_list,items.window,items.prompt,rand)
     updateinfo(items.player,items.info)
 end
-
 
 function checkForEngagement(i,items)
     items.play = true

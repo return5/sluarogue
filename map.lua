@@ -1,6 +1,7 @@
 --File contains functions for creating collision map and game map
 
 local Path  = require("path")
+local Rooms = require("room")
 
 HEIGHT = 45
 WIDTH  = 100
@@ -109,7 +110,7 @@ end
 
 --make collision map then make the game map from that collision map
 --finally, return collision map back to main
-function makeMap(rooms)
+local function makeMap(rooms)
     local collision_map = MAP:new()
     local start,stop    = makeStartStop(rooms)
     loopMap(collision_map,addIconToMap,0)
@@ -123,14 +124,27 @@ function makeMap(rooms)
   return false,collision_map
 end
 
-function makeGameMap(collision_map)
+local function makeGameMap(collision_map)
     local game_map = MAP:new()
     loopMap(collision_map,convertCollisionToMap,game_map)
     return game_map
 end
 
-function updateCollisionMap(collision_map)
+local function updateCollisionMap(collision_map)
     loopMap(collision_map,convertToWalkable,nil)    
     return collision_map
+end
+
+function createMaps()
+   local rooms,collision_map
+   local keep_trying = true
+   repeat
+        rooms,collision_map        = nil
+        rooms                      = makeRooms(8)
+        keep_trying, collision_map = makeMap(rooms)
+    until(keep_trying == false)
+    game_map      = makeGameMap(collision_map)
+    collision_map = updateCollisionMap(collision_map)
+    return {rooms,game_map,collision_map}
 end
 

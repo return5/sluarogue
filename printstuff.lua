@@ -232,16 +232,16 @@ function printEnemyCombat(game_win,enemy_type)
         printSkeleton(game_win)
     elseif enemy_type == "M" then
         printMonster(game_win)
-    elseif enemy_type == "v" then
+    elseif enemy_type == "V" then
         printMage()
     elseif enemy_type == "R" then
         printRogue(game_win)
     end 
 end
 
-function printPlayerPrompt(prompt)
+function printPlayerPrompt(name,prompt)
     wclear(prompt)
-    wprintw(prompt,"Player turn. select option:\n")
+    wprintw(prompt,name .. "'s turn.select option:\n")
     wprintw(prompt,"\t1)regular atttack.\n")
     wprintw(prompt,"\t2)special attack.\n")
     wprintw(prompt,"\t3)use item.\n")
@@ -249,11 +249,13 @@ function printPlayerPrompt(prompt)
     wrefresh(prompt)
 end
 
-function printMessagePromptWin(prompt,str)
+function printMessagePromptWin(prompt,str,confirm)
     wclear(prompt)
     wprintw(prompt,str)
     wrefresh(prompt)
-    getch()
+    if confirm ~= false then
+        getch()
+    end
 end
 
 function printCombatScene(game_win,enemy_type)
