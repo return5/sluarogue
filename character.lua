@@ -33,7 +33,7 @@ function CHARACTER:new(x,y,h,a,d,m,inv,icon,name,special,color)
     self.spec          = false
     self.turn          = 0
     self.color         = color
-    self.sepcial       = special
+    self.special       = special
     return self
 end
 
@@ -43,17 +43,22 @@ local function getXY(rand,room)
     return x,y
 end
 
+
+local function makeInventory(h_p_low,h_p_high,gold_low,gold_high,m_p_low,m_p_high,d_p_low,d_p_high,a_p_low,a_p_high,rand)
+    local h_p  = rand(h_p_low,h_p_high)
+    local gold = rand(gold_low,gold_high)
+    local m_p  = rand(m_p_low,m_p_high)
+    local d_p  = rand(d_p_low,d_p_high)
+    local a_p  = rand(a_p_low,a_p_high)
+    return INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+end
+
 local function makeSwordsman(rand,room)
-    local health  = rand(8,15)
+    local health  = rand(9,15)
     local attack  = rand(4,6)
     local defense = rand(1,3)
     local magic   = 0
-    local h_p     = rand(0,3)
-    local gold    = rand(0,200)
-    local m_p     = rand(0,3)
-    local d_p     = rand(0,3)
-    local a_p     = rand(0,3)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,3,0,200,0,3,0,3,0,3,rand)
     local icon    = "S"
     local name    = "Swordsman"
     local special = "power"
@@ -62,35 +67,26 @@ local function makeSwordsman(rand,room)
     return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
-local function makeBat(rand,room)
-    local health  = rand(7,15)
+local function makeFlyingThings(rand,room)
+    local health  = rand(9,15)
     local attack  = rand(1,4)
     local defense = rand(1,2)
     local magic   = 0
-    local h_p     = 0 
-    local gold    = rand(0,5)
-    local m_p     = 0 
-    local d_p     = 0 
-    local a_p     = 0 
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,0,0,0,0,5,0,0,0,0,rand)
     local x,y     = getXY(rand,room)
     local icon    = "B"
-    local name    = "Bat"
+    local name    = "Flying Things"
     local special = "defense"
     local color   = COLORS.MAGENTA
     return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
 local function makeSpearman(rand,room)
-    local health  = rand(5,10)
+    local health  = rand(9,15)
     local attack  = rand(6,9)
     local defense = rand(1,3)
     local magic   = 0
-    local h_p     = rand(0,4)
-    local gold    = rand(0,250)
-    local m_p     = rand(0,4)
-    local d_p     = rand(0,4)
-    local a_p     = rand(0,4)
+    local inv     = makeInventory(0,4,0,250,0,4,0,4,0,4,rand)
     local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
     local x,y     = getXY(rand,room)
     local icon    = "E"
@@ -101,16 +97,11 @@ local function makeSpearman(rand,room)
 end
 
 local function makeWolf(rand,room)
-    local health  = rand(5,8)
+    local health  = rand(9,13)
     local attack  = rand(9,13)
     local defense = rand(1,2)
     local magic   = 0
-    local h_p     = 0
-    local gold    = 0
-    local m_p     = 0
-    local d_p     = 0
-    local a_p     = 0
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,0,0,0,0,0,0,0,0,0,rand)
     local x,y     = getXY(rand,room)
     local icon    = "W"
     local name    = "Wolf"
@@ -120,16 +111,11 @@ local function makeWolf(rand,room)
 end
 
 local function makeSkeleton(rand,room)
-    local health  = rand(10,20)
+    local health  = rand(12,17)
     local attack  = rand(4,7)
     local defense = rand(3,5)
     local magic   = 0
-    local h_p     = 0
-    local gold    = rand(0,10)
-    local m_p     = 0
-    local d_p     = 0
-    local a_p     = 0
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,0,0,10,0,0,0,0,0,0,rand)
     local x,y     = getXY(rand,room)
     local icon    = "D"
     local name    = "Skeleton"
@@ -139,16 +125,11 @@ local function makeSkeleton(rand,room)
 end
 
 local function makeMonster(rand,room)
-    local health  = rand(7,12)
+    local health  = rand(14,20)
     local attack  = rand(5,8)
     local defense = rand(1,2)
     local magic   = 0
-    local h_p     = rand(0,1)
-    local gold    = rand(0,100)
-    local m_p     = rand(0,1)
-    local d_p     = rand(0,1)
-    local a_p     = rand(0,1)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,1,0,100,0,1,0,1,0,1,rand)
     local x,y     = getXY(rand,room)
     local icon    = "M"
     local name    = "Monster"
@@ -158,16 +139,11 @@ local function makeMonster(rand,room)
 end
 
 local function makeMAge(rand,room)
-    local health  = rand(5,8)
+    local health  = rand(9,12)
     local attack  = rand(2,6)
     local defense = rand(1,2)
     local magic   = rand(8,15)
-    local h_p     = rand(0,6)
-    local gold    = rand(0,400)
-    local m_p     = rand(0,6)
-    local d_p     = rand(0,3)
-    local a_p     = rand(0,2)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,6,0,400,0,6,0,3,0,2,rand)
     local x,y     = getXY(rand,room)
     local icon    = "V"
     local name    = "Mage"
@@ -177,16 +153,11 @@ local function makeMAge(rand,room)
 end
 
 local function makeRogue(rand,room)
-    local health  = rand(4,9)
+    local health  = rand(9,13)
     local attack  = rand(5,7)
     local defense = rand(1,3)
-    local h_p     = rand(0,4)
-    local gold    = rand(0,150)
     local magic   = 0
-    local m_p     = rand(0,1)
-    local d_p     = rand(0,2)
-    local a_p     = rand(0,3)
-    local inv     = INVENTORY:new(h_p,gold,m_p,d_p,a_p)
+    local inv     = makeInventory(0,4,0,150,0,1,0,2,0,3,rand)
     local x,y     = getXY(rand,room)
     local icon    = "R"
     local name    = "Rogue"
@@ -215,7 +186,7 @@ end
 
 function populateEnemyList(rooms)
     ENEMY_FUNCS = {
-        makeSwordsman,makeBat,makeSpearman,makeWolf,
+        makeSwordsman,makeFlyingThings,makeSpearman,makeWolf,
         makeSkeleton,makeMonster,makeMAge,makeRogue
     }
     local getnumenemy = getNumberOfEnemy

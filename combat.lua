@@ -13,8 +13,9 @@ local function applyDamage(attacker,defender,damage,counter)
     end
     if attacker.health <= 0 or defender.health <= 0 then
         return false
+    else
+        return true 
     end
-    return true 
 end
 
 local function defenseCounter(attacker,defender)
@@ -31,10 +32,14 @@ end
 local function defenseDown(attacker,defender)
    local str = ("%s cast a spell to lower %s's defense by 2."):format(attacker.name,defender.name) 
    attacker.spec = true
+   defender.def  = defender.def - 2
+   if defender.def < 0 then
+       defender.def = 0
+   end
    return 0,str,0
 end
 
-local function throwCouonter(attacker,defender)
+local function throwCounter(attacker,defender)
     local counter = 2
     local str     = ("%s tries to throw %s but %s punches %s for 2 damage instead."):format(attacker.name,defender.name,defender.name,attacker.name)
     return 0,str,counter
@@ -97,7 +102,7 @@ local function useSpecialAttack(attacker,defender,rand,prompt)
     elseif attacker.special == "throw" then
         func1 = throwAttack
         func2 = throwMiss
-        func3 = throwCount
+        func3 = throwCounter
     elseif attacker.special == "defense" then
         func1 = defenseDown
         func2 = defenseMiss
@@ -134,26 +139,26 @@ local function normalAttack(rand,attacker,defender,prompt)
 end
 
 local function compUseItems(rand,character,prompt)
-    if character.health < character.max_health / 2 then
-        if useHealthPotion(character) == false then
+    if character.health < (character.max_health / 2) then
+        if useHealthPotion(character,prompt) == false then
             return compUseItems(rand,character)
         else
             return true
         end
-    elseif character.magic < character.max_magic / 2 then
-        if useMagicPotion(character) == false then
+    elseif character.magic < (character.max_magic / 2) then
+        if useMagicPotion(character,prompt) == false then
             return compUseItems(rand,character)
         else
             return true
         end
     elseif character.raise_def == 0 then
-        if usedefensePotion(character) == false then
+        if usedefensePotion(character,prompt) == false then
             return compUseItems(rand,character)
         else
             return true
         end
     elseif character.raise_attack == 0 then
-        if useAttackPotion(character) == false then
+        if useAttackPotion(character,prompt) == false then
             return compUseItems(rand,character)
         else
             return true
@@ -173,8 +178,8 @@ local function compAttack(i,items,rand)
             alive = compAttack(i,items,rand)
         end
     else
-        if items.e_list[i].special == false then
-            alive = useSpecialAttack(rand,items.e_list[i],items.player,items.prompt)
+        if items.e_list[i].spec == false then
+            alive = useSpecialAttack(items.e_list[i],items.player,rand,items.prompt)
         else
             alive = compAttack(i,items,rand)
         end
@@ -224,7 +229,12 @@ local function getPlayerInput(i,items,rand)
     if input == 1 then
       alive = normalAttack(rand,items.player,items.e_list[i],items.prompt)
     elseif input == 2 then
-        alive = specialAttack(rand,items.player,items.e_list[i],items.prompt)
+        if items.player.spec == false then
+            alive = useSpecialAttack(items.player,items.e_list[i],rand,items.prompt)
+        else
+            printMessagePromptWin(items.prompt,"Sorry, you have already used your special this battle.")
+            alive = getPlayerInput(i,items,rand)
+        end
     elseif input == 3 then
         alive = useItem(items)
     elseif input == 4 then
@@ -248,6 +258,8 @@ end
 local function restoreCharAttr(char)
     restoreDef(char)
     restoreAttack(char)
+    char.spec = false
+    char.turn = 0
 end
 
 local function postCombat(i,items)
@@ -264,20 +276,36 @@ local function postCombat(i,items)
     wclear(items.prompt)
 end
 
+local function missedTurn(prompt,char)
+    local str = ("%s missed their turn."):format(char.name)
+    char.turn = char.turn - 1
+    printMessagePromptWin(prompt,str)
+end
+
 local function startCombat(i,items)
     local alive      = true
     local getinput   = getPlayerInput
     local rand       = math.random
     local compattack = compAttack
     local updateinfo = updateInfoWin
+    local missturn   = missedTurn
     printCombatScene(items.window,items.e_list[i].icon)
     updateinfo(items.player,items.info)
     repeat
-        alive = getinput(i,items,rand)
-        updateinfo(items.player,items.info)
-        if alive == true then
-            alive = compattack(i,items,rand)
+        if items.player.turn > 0 then
+            missturn(items.prompt,items.player)
+        else
+            alive = getinput(i,items,rand)
+            updateinfo(items.player,items.info)
         end
+        if alive == true then
+            if items.e_list[i].turn > 0 then
+                missturn(items.prompt,items.e_list[i])
+            else
+                alive = compattack(i,items,rand)
+            end
+        end
+        printMessagePromptWin(items.prompt,tostring(items.e_list[i].health))
         updateinfo(items.player,items.info)
     until (alive == false)
     postCombat(i,items)

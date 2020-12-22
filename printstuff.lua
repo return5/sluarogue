@@ -135,6 +135,37 @@ local function printMage(game_win)
 	wattroff(game_win,COLOR_PAIR(COLORS.CYAN))
 end
 
+local function printFlyingThings(game_win)
+	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
+    mvwprintw(game_win,10,32,'^') --top of head
+    mvwprintw(game_win,11,26,'^') --top of head
+    mvwprintw(game_win,11,37,'^') --top of head
+	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
+	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
+    mvwprintw(game_win,11,30,"<") --left side of body
+    mvwprintw(game_win,12,24,"<") --left side of body
+    mvwprintw(game_win,12,35,"<") --left side of body
+	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
+	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
+    mvwprintw(game_win,11,34,">") --right side of body
+    mvwprintw(game_win,12,28,">") --right side of body
+    mvwprintw(game_win,12,39,">") --right side of body
+	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
+	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
+    mvwprintw(game_win,12,32,"v") --bottom of head
+    mvwprintw(game_win,13,26,"v") --bottom of head
+    mvwprintw(game_win,13,37,"v") --bottom of head
+	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
+	wattron(game_win,COLOR_PAIR(COLORS.RED))
+    mvwprintw(game_win,11,31,"' '") --eyes
+    mvwprintw(game_win,12,25,"' '") --eyes
+    mvwprintw(game_win,12,36,"' '") --eyes
+	wattroff(game_win,COLOR_PAIR(COLORS.RED))
+    mvwprintw(game_win,12,37,".") --mouth
+    mvwprintw(game_win,12,26,".") --mouth
+    mvwprintw(game_win,11,32,".") --mouth
+end
+
 local function printMonsterHead(game_win,x) 
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
 	mvwprintw(game_win,9,26+x,"(   )") --facce
@@ -154,7 +185,7 @@ local function printMonsterBody(game_win)
 	mvwprintw(game_win,12,28,"/      \\")
 	mvwprintw(game_win,13,27,"/        \\")
 	mvwprintw(game_win,14,26,"/          \\")
-    wattroff(game_win,COLOR_:AIR(COLORS.YELLOW))
+    wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 end
 
 local function printMonsterSeveredHead(game_win,y,x) 
@@ -192,7 +223,7 @@ function printEnemyCombat(game_win,enemy_type)
     if enemy_type == "S" then
         printSwordsman(game_win)
     elseif enemy_type == "B" then
-        printBat(game_win)
+        printFlyingThings(game_win)
     elseif enemy_type == "E" then
         printSpearman(game_win)
     elseif enemy_type == "W" then
