@@ -1,7 +1,7 @@
 --File contains functions for creating collision map and game map
 
-local Path  = require("path")
-local Rooms = require("room")
+local Path  = require("auxillary.path")
+local Rooms = require("auxillary.room")
 
 HEIGHT = 45
 WIDTH  = 100

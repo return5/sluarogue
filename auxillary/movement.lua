@@ -1,7 +1,6 @@
 --File contains functions for moving characters around the map
 
-local ncurse = require("sluacurses")
-local combat = require("combat")
+local combat = require("auxillary.combat")
 
 local FUNC_TABLE = {}
 
@@ -51,11 +50,9 @@ end
 
 local function enemyCharTurn(i,funcs,items)
     if funcs.visible(items.player,items.e_list[i],funcs.abs) then
-       if funcs.compturn(i,funcs,items) == false then
-            funcs.remove(items.e_list,i)
-        end
-    end
-    return items.player.health > 0
+       return funcs.compturn(i,funcs,items)
+   end
+   return true
 end
 
 local function loopEnemyList(fn,funcs,items)
@@ -71,6 +68,7 @@ local function loopEnemyList(fn,funcs,items)
             return false
         end
     end
+    return play
 end
 
 function moveCompPlayers()

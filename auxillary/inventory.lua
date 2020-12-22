@@ -1,5 +1,5 @@
 --File contains functions for creating inventory and also functions to use inventory items
-local printstuff = require("printstuff")
+local printstuff = require("auxillary.printstuff")
 
 INVENTORY = {hp = nil, dp = nil, mp = nil, ap = nil, gold = nil}
 INVENTORY.__index = INVENTORY

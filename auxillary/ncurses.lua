@@ -1,4 +1,5 @@
 --File contains functions for initializing and working with ncurses
+local ncurs = require("sluacurses")
 
 COLORS = {
     BLACK   = 1,

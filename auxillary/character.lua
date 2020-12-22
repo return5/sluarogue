@@ -1,6 +1,6 @@
 --File contains functions for creating chracter objects.
 
-local INV = require("inventory")
+local INV = require("auxillary.inventory")
 
 CHARACTER = {
         x = nil, y = nil, health = nil, max_health = nil, attack = nil, def = nil, inv = nil,icon = nil, 

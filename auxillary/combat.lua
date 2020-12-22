@@ -1,7 +1,7 @@
 --File contains functions for fighting between player and enemy characters
 
-local Print = require("printstuff")
-local Inv   = require("inventory")
+local Print = require("auxillary.printstuff")
+local Inv   = require("auxillary.inventory")
 
 
 local function applyDamage(attacker,defender,damage,counter)
@@ -226,14 +226,14 @@ local function getPlayerInput(map,player,comp,prompt,rand)
             alive = useSpecialAttack(player,comp,rand,prompt)
         else
             printMessagePromptWin(prompt,"Sorry, you have already used your special this battle.")
-            return getPlayerInput(player,comp,prompt,rand)
+            return getPlayerInput(map,player,comp,prompt,rand)
         end
     elseif input == 3 then
         alive = useItem(player)
     elseif input == 4 then
         alive = runAway(rand,player)
     else
-        return getPlayerInput(player,comp,prompt,rand)
+        return getPlayerInput(map,player,comp,prompt,rand)
     end
     return alive
 end
@@ -356,13 +356,15 @@ local function startCombat(i,items)
     until (alive == false)
     postCombat(i,items.player,items.e_list,items.window,items.prompt,rand)
     updateinfo(items.player,items.info)
+    return items.player.health > 0
 end
 
 function checkForEngagement(i,items)
-    items.play = true
+    local play = true
     if items.player.x == items.e_list[i].x and
         items.player.y == items.e_list[i].y then
-        startCombat(i,items)
+        play = startCombat(i,items)
     end
+    return play
 end
 

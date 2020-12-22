@@ -1,5 +1,8 @@
 --File contains functions for generating paths between rooms
 
+local Pf       = require ("jumper.pathfinder") 
+local Grid     = require("jumper.grid")
+
 local function getStartStopX(rand,rooms)
     local s_x = {}
     for i=1,#rooms, 1 do
@@ -62,8 +65,6 @@ local function makePath(finder,start,stop,additem)
 end
 
 function getFinder(collision_map,walkable)
-    local Pf       = require ("jumper.pathfinder") 
-    local Grid     = require("jumper.grid")
     local grid     = Grid(collision_map)
     local finder   = Pf(grid,'DIJKSTRA',walkable)
     finder:setMode("ORTHOGONAL")

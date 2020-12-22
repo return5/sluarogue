@@ -1,7 +1,5 @@
 --File contains functions for printing things to the screen
 
-local Ncurs = require("sluacurses")
-
 local function printHero(game_win) 
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
 	mvwprintw(game_win,11,10,"\\") --sword
