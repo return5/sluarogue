@@ -2,7 +2,7 @@
 
 local combat = require("auxillary.combat")
 
-local FUNC_TABLE = {}
+local FUNC_TABLE
 
 local ITEMS
 
@@ -88,11 +88,11 @@ local function checkInput(input)
     return false
 end
 
-local function movePlayer(input)
+local function movePlayer(player,input)
     local mov,x,y = checkNewLocation(input)
     if mov == true then
-        ITEMS.player.x = x
-        ITEMS.player.y = y
+        player.x = x
+        player.y = y
     end 
     return true,mov
 end
@@ -106,25 +106,40 @@ function confirmChoice(prompt)
     end
 end
 
-function playerTurn()
-    local input  = getch()
-    local play   = true
+local function checkForExit(player)
+    if ITEMS.game_map[player.y][player.x].icon == '&' then
+        printMessagePromptWin(ITEMS.prompt,"do you want to move to next level?(y/n)",false)
+        if getch() == "y" then
+            return true
+        end
+    end
+    return false
+end
+
+function playerTurn(player)
+    local input     = getch()
+    local play      = true
+    local new_level = false
     if checkInput(input) == false then
-        return playerTurn()
+        return playerTurn(player,prompt)
     elseif input == "i" then
-        return openInventory(ITEMS.player)
+        openInventory(player)
     elseif input == "q" and confirmChoice(ITEMS.prompt) == true then
         play = false
     else 
-       local move = movePlayer(input)
+       local move = movePlayer(player,input)
         if move == false and play == true then
-            return playerTurn()
+            return playerTurn(player,ITEMS.prompt)
+        else
+            new_level = checkForExit(player)
+            play      = not new_level
+            
         end
         if play == true then
            play = loopEnemyList(checkForEngagement,nil,ITEMS) 
         end
     end
-    return play
+    return play,new_level
 end
 
 function makeFuncTable()
@@ -138,15 +153,16 @@ function makeFuncTable()
     }
 end
 
-function makeItemTable(collision_map,finder,player,e_list,window,prompt,info)
+function makeItemTable(game_map,collision_map,finder,player,e_list,window,prompt,info)
     ITEMS = {
-        map    = collision_map,
-        finder = finder,
-        player = player,
-        e_list = e_list,
-        window = window,
-        prompt = prompt,
-        info   = info
+        game_map = game_map,
+        map      = collision_map,
+        finder   = finder,
+        player   = player,
+        e_list   = e_list,
+        window   = window,
+        prompt   = prompt,
+        info     = info
     }
 end
 

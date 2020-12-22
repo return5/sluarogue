@@ -20,7 +20,7 @@ local function gameLoop(game_map,collision_map,finder,e_list,player,window)
         printplayer(player,window)
         printenemies(game_map,e_list,window)
         refreshw(window)
-        play,new_level = playerturn()
+        play,new_level = playerturn(player)
         if play == true then
             play = movecompplayers()
         end
@@ -40,7 +40,7 @@ local function main()
     local info_win   = makeWindowWithBorder(4,12,1,WIDTH + 2)
     local prompt_win = makeWindowWithBorder(7,WIDTH,HEIGHT + 3,1)
     makeFuncTable()
-    makeItemTable(maps[3],finder,player,e_list,game_win,prompt_win,info_win)
+    makeItemTable(maps[2],maps[3],finder,player,e_list,game_win,prompt_win,info_win)
     gameLoop(maps[2],maps[3],finder,e_list,player,game_win)
     endwin()
 end
