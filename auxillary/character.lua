@@ -37,6 +37,7 @@ function CHARACTER:new(x,y,h,a,d,m,inv,icon,name,special,color)
     return self
 end
 
+--get a random x,y coordinate located inside the room
 local function getXY(rand,room)
     local x  = rand(room.x + 1,room.x + room.width - 1)
     local y  = rand(room.y + 1,room.y + room.height - 1)
@@ -155,10 +156,12 @@ local function makeRogue(rand,room)
     return CHARACTER:new(x,y,health,attack,defense,magic,inv,icon,name,special,color)
 end
 
+--returns a random enemy type
 local function getEnemyType(rand)
     return rand(1,#ENEMY_FUNCS)
 end
 
+--gets the number of enemies for a given room. random number based upon the size of the room
 local function getNumberOfEnemy(room,rand,ceil)
     local size = room.width * room.height
     local prob = ceil(size / 15)
@@ -166,6 +169,7 @@ local function getNumberOfEnemy(room,rand,ceil)
     return num
 end
 
+--for each room make the required number of enemies
 local function makeEnemies(num,func_table,room)
     for i=1,num,1 do
         local e_type = func_table.getenemytype(func_table.rand)
@@ -173,6 +177,7 @@ local function makeEnemies(num,func_table,room)
     end
 end
 
+--for each room in rooms table make the require number of enemies
 function populateEnemyList(rooms)
     ENEMY_FUNCS = {
         makeSwordsman,makeFlyingThings,makeSpearman,makeWolf,
@@ -192,6 +197,7 @@ function populateEnemyList(rooms)
     return ENEMY_LIST
 end
 
+--get a random special for the player character
 function getSpecial(rand)
     local n = rand(0,2)
     if n == 0 then
@@ -204,21 +210,26 @@ function getSpecial(rand)
     return nil
 end
 
-function getName()
-    io.write("Please enter your name:\n")
-    local str = io.read("*line")
+--user inputs name for player character
+function getName(window)
+    echo()
+    mvwprintw(window,5,5,"Please enter your name:\n")
+    wrefresh(window)
+    local str = mvwgetstr(window,6,5)
+    noecho()
+    wclear(window)
     return str
 end
 
-function makePlayer(rooms)
+function makePlayer(rooms,window)
     local rand    = math.random
-    local i       = rand(1,#rooms)
+    local i       = rand(1,#rooms)  --room which player starts in. 
     local x       = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
     local y       = rand(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
     local health  = rand(18,25)
     local def     = rand(2,4)
     local attack  = rand(6,9)
-    local name    = getName()
+    local name    = getName(window)
     local special = getSpecial(rand)
     local inv     = makeInventory(1,1,1,1,1,1,1,1,1,1,rand)
     local color   = COLORS.CYAN

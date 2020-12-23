@@ -217,6 +217,7 @@ local function printMonsterR(game_win)
 	printMonsterSeveredHead(game_win,-1,20)
 end
 
+--when starting combat print the enemy character to the screen based on type
 function printEnemyCombat(game_win,enemy_type)
     if enemy_type == "S" then
         printSwordsman(game_win)
@@ -237,6 +238,7 @@ function printEnemyCombat(game_win,enemy_type)
     end 
 end
 
+--combat prompt for player
 function printPlayerPrompt(name,prompt)
     wclear(prompt)
     wprintw(prompt,name .. "'s turn.select option:\n")
@@ -247,6 +249,8 @@ function printPlayerPrompt(name,prompt)
     wrefresh(prompt)
 end
 
+--print a message to the prompt window.
+--optionally send true to keep form calling getch at the end
 function printMessagePromptWin(prompt,str,confirm)
     wclear(prompt)
     wprintw(prompt,str)
@@ -256,6 +260,7 @@ function printMessagePromptWin(prompt,str,confirm)
     end
 end
 
+--when combat starts print the player and enemy to screen
 function printCombatScene(game_win,enemy_type)
     wclear(game_win)
     printHero(game_win)
@@ -263,6 +268,7 @@ function printCombatScene(game_win,enemy_type)
     wrefresh(game_win)
 end
 
+--update the info win with player info
 function updateInfoWin(player,info_win)
     wclear(info_win)
     wprintw(info_win,("health: %s\n"):format(player.health))
@@ -271,12 +277,14 @@ function updateInfoWin(player,info_win)
     wrefresh(info_win)
 end
 
+--print player icon to the map
 function printPlayer(player,window)
     wattron(window,COLOR_PAIR(COLORS.CYAN))
     mvwprintw(window,player.y - 1,player.x - 1,player.icon)
     wattroff(window,COLOR_PAIR(COLORS.CYAN))
 end
 
+--for each visible enemy print its icon to map.
 function printEnemyIcons(map,e_list,window)
     local print_e = mvwprintw
     for i = 1,#e_list,1 do
@@ -288,6 +296,7 @@ function printEnemyIcons(map,e_list,window)
     end
 end
 
+--print the game map to screen
 function printMap(map,window)
     local printicon = printIcon
     local width     = #map[1]

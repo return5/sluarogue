@@ -231,7 +231,7 @@ local function getPlayerInput(map,player,comp,prompt,rand)
     elseif input == 3 then
         alive = useItem(player)
     elseif input == 4 then
-        alive = runAway(rand,player)
+        alive = runAway(map,player,prompt,rand)
     else
         return getPlayerInput(map,player,comp,prompt,rand)
     end

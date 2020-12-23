@@ -12,18 +12,22 @@ function ROOM:new(height,width,x,y)
     return self
 end
 
+--get a random y location for the room
 local function getY(h) 
     return math.random(1,HEIGHT - h - 2)
 end
 
+--get a random x location for the room
 local function getX(w)
     return math.random(1,WIDTH - w - 2)
 end
 
+--get a random width and height for the room
 local function getWH()
     return math.random(4,14),math.random(3,8)
 end
 
+--makes sure the new room doesnt overlap an already existing room
 local function checkOverLap(val_start,val_end,room_start,room_end)
     if val_start >= room_start and val_start <= room_end then
         return true
@@ -33,6 +37,8 @@ local function checkOverLap(val_start,val_end,room_start,room_end)
     end
     return false
 end
+
+--checks to make sure location for new room doesnt cover up or intersect with any already existing rooms
 local function checkRoom(rooms,x,y,w,h,func_table)
     for i=1,#rooms,1 do
         --check if current room is located inside of a square covering rooms[i] exteding 4 blocks in x direction and 2 in y
@@ -49,6 +55,7 @@ local function checkRoom(rooms,x,y,w,h,func_table)
     return false
 end
 
+--create a new room
 local function addRoom(rooms,i,func_table)
     local h,w,x,y
     repeat 
@@ -60,13 +67,14 @@ local function addRoom(rooms,i,func_table)
     return ROOM:new(h,w,x,y)
 end
 
-
+--add rooms to the rooms table
 local function loopRooms(rooms,func_table,stop)
     for i=1,stop,1 do
         func_table.additem(rooms,func_table.addroom(rooms,i,func_table))
     end
 end
 
+--starting point to creating rooms. 
 function makeRooms(stop)
     local getx       = getX
     local gety       = getY

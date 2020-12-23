@@ -81,11 +81,11 @@ function useMagicPotion(character,prompt)
 end
 
 function makeInventory(h_p_low,h_p_high,gold_low,gold_high,m_p_low,m_p_high,d_p_low,d_p_high,a_p_low,a_p_high,rand)
-    local h_p  = rand(h_p_low,h_p_high)
+    local h_p  = rand(h_p_low,h_p_high)  --health potion
     local gold = rand(gold_low,gold_high)
-    local m_p  = rand(m_p_low,m_p_high)
-    local d_p  = rand(d_p_low,d_p_high)
-    local a_p  = rand(a_p_low,a_p_high)
+    local m_p  = rand(m_p_low,m_p_high)  --magic potion
+    local d_p  = rand(d_p_low,d_p_high)  --defense potion
+    local a_p  = rand(a_p_low,a_p_high)  --attack potion
     return INVENTORY:new(h_p,gold,m_p,d_p,a_p)
 end
 

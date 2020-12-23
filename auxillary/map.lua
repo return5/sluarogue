@@ -21,18 +21,21 @@ local function addIconToMap(map,i,j,icon)
     map[i][j] = icon
 end
 
+--iterate through room by width. start at left and move right. each iteration is a column in room.
 local function iterateRoomWidth(map,y,start_x,end_x,icon,addicon)
     for i=start_x,end_x,1 do
         addicon(map,y,i,icon)
     end
 end
 
+--loop through a room by its height. start at top and work way down to bottom. each iteration is a row in rom
 local function iterateRoomHeight(map,start_y,end_y,start_x,end_x,icon,addicon,itwidth)
      for i=start_y,end_y,1 do
         itwidth(map,i,start_x,end_x,icon,addicon)
     end
 end
 
+--add each elelemnt fomr paths to the collision map
 local function addPathsToCollisionMap(map,paths)
     for i=1,#paths,1 do
         for j=1,#paths[i],1 do
@@ -47,6 +50,7 @@ local function convertToWalkable(map,i,j)
     end
 end
 
+--take an icon form the collision map and convert it to the icon for game map
 local function convertCollisionToMap(collision,i,j,map)
     local icon     = collision[i][j]
     local new_icon = "."
@@ -62,6 +66,7 @@ local function convertCollisionToMap(collision,i,j,map)
     map[i][j] = {icon = new_icon,visible = false}
 end
 
+--loop through a map table and call passed in funcion for each item
 local function loopMap(map,fn,item)
     local func = fn
     for i=1,HEIGHT,1 do
@@ -71,6 +76,7 @@ local function loopMap(map,fn,item)
     end
 end
 
+--loop through the rooms table. call the passed in function 'fn' on each room
 local function loopRooms(map,rooms,fn,top,side,middle)
     local func = fn
     for i=1,#rooms,1 do
@@ -78,6 +84,7 @@ local function loopRooms(map,rooms,fn,top,side,middle)
     end
 end
 
+--add the doors of each room to the collision mp
 local function addStartStopToCollision(collision_map,start,stop)
     for i = 1, #start,1 do
         collision_map[start[i][2]][start[i][1]] = 0
@@ -85,6 +92,7 @@ local function addStartStopToCollision(collision_map,start,stop)
     end
 end
 
+--add a room to the game map. 
 local function addRoomToMap(map,room,top,side,middle)
     local addicon  = addIconToMap
     local y_limit  = room.y + room.height 
@@ -98,6 +106,7 @@ local function addRoomToMap(map,room,top,side,middle)
     itheight(map,y_limit,y_limit,room.x,x_limit,top,addicon,itwidth)
 end
 
+--if tile is within view of the player then switch it to visible.
 function makeVisible(map,y,x)
     for i=y - 6,y + 6,1 do
         for j=x - 6,x + 6,1 do
@@ -108,8 +117,7 @@ function makeVisible(map,y,x)
     end
 end
 
---make collision map then make the game map from that collision map
---finally, return collision map back to main
+--make collision map for game
 local function makeMap(rooms)
     local collision_map = MAP:new()
     local start,stop    = makeStartStop(rooms)
@@ -130,11 +138,14 @@ local function makeGameMap(collision_map)
     return game_map
 end
 
+--convert all walkable tiles in collision map to a 4
 local function updateCollisionMap(collision_map)
     loopMap(collision_map,convertToWalkable,nil)    
     return collision_map
 end
 
+--make game map, collision map, and rooms.
+-- each iteration of the loop is the pathfinder trying to find a valid path to each door of each room.
 function createMaps()
    local rooms,collision_map
    local keep_trying = true
@@ -148,13 +159,14 @@ function createMaps()
     return {rooms,game_map,collision_map}
 end
 
+--place the exit into a random room excluding the room the player strats in.
 function makeExit(maps,i)
     local r
     local rand = math.random
     repeat
         r = rand(1,#maps[1])
     until(r ~- i)
-    local room = maps[1][r]
+    local room = maps[r][i]
     local x    = rand(room.x + 1,room.x + room.width - 1)
     local y    = rand(room.y + 1,room.y + room.height - 1)
     maps[2][y][x].icon = '&' 

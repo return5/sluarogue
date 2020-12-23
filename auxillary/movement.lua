@@ -6,7 +6,7 @@ local FUNC_TABLE
 
 local ITEMS
 
-
+--checks if new x,y is a walkable tile
 local function checkXY(map,x,y)
     if map[y][x] == 4 then
        return true,x,y
@@ -14,6 +14,7 @@ local function checkXY(map,x,y)
    return false,x,y
 end
 
+--checks the direction player tries to walk to make sure it is a walkable tile
 local function checkNewLocation(dir)
     if dir == "w" then
         return checkXY(ITEMS.map,ITEMS.player.x,ITEMS.player.y - 1)
@@ -27,6 +28,7 @@ local function checkNewLocation(dir)
     return false, ITEMS.player.x,ITEMS.player.y
 end
 
+--move the computer player one tile towards player character
 local function moveCompChar(i,items)
     local path = items.finder:getPath(items.e_list[i].x,items.e_list[i].y,items.player.x,items.player.y)
     local x    = path._nodes[2]:getX() 
@@ -34,11 +36,13 @@ local function moveCompChar(i,items)
     return x,y
 end
 
-local function compPlayerTurn(i,funcs,items)
+--move computer player then check to see if they can engage player in combat
+local function compPlayerTurn(i,items,funcs)
     items.e_list[i].x,items.e_list[i].y = funcs.movecomp(i,items)
     return funcs.checkengage(i,items)
 end
 
+--is the player character within viewing distance of the computer player
 local function isPlayerVisible(player,comp,abs)
     local x_dist = abs(player.x - comp.x)
     local y_dist = abs(player.y - comp.y)
@@ -48,22 +52,21 @@ local function isPlayerVisible(player,comp,abs)
     return false
 end
 
-local function enemyCharTurn(i,funcs,items)
+--if player is visible then move computer player
+local function enemyCharTurn(i,items,funcs)
     if funcs.visible(items.player,items.e_list[i],funcs.abs) then
-       return funcs.compturn(i,funcs,items)
+       return funcs.compturn(i,items,funcs)
    end
    return true
 end
 
-local function loopEnemyList(fn,funcs,items)
+
+--loop through the enemy list table and call a given function ofr each enemy
+local function loopEnemyList(fn,items,funcs)
     local func = fn
     local play = true
     for i=#items.e_list,1,-1 do
-        if funcs == nil then
-            play = func(i,items)
-        else
-            play = func(i,funcs,items)
-        end
+        play = func(i,items,funcs)
         if play == false then
             return false
         end
@@ -71,18 +74,17 @@ local function loopEnemyList(fn,funcs,items)
     return play
 end
 
+
 function moveCompPlayers()
     local funcs = FUNC_TABLE
     local items = ITEMS
     local play  = true
-    return loopEnemyList(enemyCharTurn,funcs,items)
+    return loopEnemyList(enemyCharTurn,items,funcs)
 end
 
+--make sure player input is valide
 local function checkInput(input)
     if input == "w" or input == "s" or input == "d" or input == "a" then
-        return true
-    end
-    if input == "i" or input == "q" then
         return true
     end
     return false
@@ -120,13 +122,11 @@ function playerTurn(player)
     local input     = getch()
     local play      = true
     local new_level = false
-    if checkInput(input) == false then
-        return playerTurn(player,prompt)
-    elseif input == "i" then
+    if input == "i" then
         openInventory(player)
     elseif input == "q" and confirmChoice(ITEMS.prompt) == true then
         play = false
-    else 
+    elseif checkInput( input) == true then 
        local move = movePlayer(player,input)
         if move == false and play == true then
             return playerTurn(player,ITEMS.prompt)
@@ -138,10 +138,14 @@ function playerTurn(player)
         if play == true then
            play = loopEnemyList(checkForEngagement,nil,ITEMS) 
         end
+    else
+        return playerTurn(player)
     end
     return play,new_level
 end
 
+--table to hold funcs to pass around to other functions.
+--candidate for removal
 function makeFuncTable()
     FUNC_TABLE = {
         movecomp    = moveCompChar,
@@ -153,6 +157,8 @@ function makeFuncTable()
     }
 end
 
+--table of items to pass around to functions.
+--candidate for removal
 function makeItemTable(game_map,collision_map,finder,player,e_list,window,prompt,info)
     ITEMS = {
         game_map = game_map,
