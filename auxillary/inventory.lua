@@ -129,6 +129,8 @@ function playerInventory(player,prompt,info)
     elseif choice == "defense" then
         useDefensePotion(player,prompt)
     else
+        wclear(prompt)
+        wrefresh(prompt)
         return false
     end
     updateInfoWin(player,info)

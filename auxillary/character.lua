@@ -41,6 +41,12 @@ end
 local function getXY(rand,room)
     local x  = rand(room.x + 1,room.x + room.width - 1)
     local y  = rand(room.y + 1,room.y + room.height - 1)
+    for i=1,#ENEMY_LIST,1 do
+        while x == ENEMY_LIST[i].x and y == ENEMY_LIST[i].y do
+            x = rand(room.x + 1,room.x + room.width - 1)
+            y = rand(room.y + 1,room.y + room.height - 1)
+        end
+    end
     return x,y
 end
 
@@ -224,14 +230,13 @@ end
 function makePlayer(rooms,window)
     local rand    = math.random
     local i       = rand(1,#rooms)  --room which player starts in. 
-    local x       = rand(rooms[i].x + 1,rooms[i].x + rooms[i].width - 1)
-    local y       = rand(rooms[i].y + 1, rooms[i].y + rooms[i].height - 1)
-    local health  = rand(18,25)
+    local x,y     = getXY(rand,rooms[i])
+    local health  = rand(20,30)
     local def     = rand(2,4)
     local attack  = rand(6,9)
     local name    = getName(window)
     local special = getSpecial(rand)
-    local inv     = makeInventory(1,1,1,1,1,1,1,1,1,1,rand)
+    local inv     = makeInventory(0,4,0,150,0,5,0,2,0,2,rand)
     local color   = COLORS.CYAN
     local player  = CHARACTER:new(x,y,health,attack,def,10,inv,'@',name,special,color)
     return player,i

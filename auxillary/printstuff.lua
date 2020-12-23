@@ -232,7 +232,7 @@ function printEnemyCombat(game_win,enemy_type)
     elseif enemy_type == "M" then
         printMonster(game_win)
     elseif enemy_type == "V" then
-        printMage()
+        printMage(game_win)
     elseif enemy_type == "R" then
         printRogue(game_win)
     end 
@@ -317,6 +317,7 @@ function printPlayerInventory(inv_list,prompt)
     for i=1,#inv_list,1 do
         print_inv(prompt,i,5,("%d)%s  %d"):format(i,inv_list[i][1],inv_list[i][2]))
     end
+    print_inv(prompt,#inv_list + 1,5,"any other number to cancel")
     wrefresh(prompt)
 end
 

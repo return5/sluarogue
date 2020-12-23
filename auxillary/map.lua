@@ -165,7 +165,7 @@ function makeExit(maps,i)
     local rand = math.random
     repeat
         r = rand(1,#maps[1])
-    until(r ~- i)
+    until(r ~= i)
     local room = maps[1][r]
     local x    = rand(room.x + 1,room.x + room.width - 1)
     local y    = rand(room.y + 1,room.y + room.height - 1)
