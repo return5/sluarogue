@@ -9,8 +9,8 @@ function INVENTORY:new(hp,gold,mp,dp,ap)
     self.hp   = hp  --health potion
     self.dp   = dp  --defense potion
     self.mp   = mp  --magic potion
-    self.gold = gold 
     self.ap   = ap   -- ttack potion
+    self.gold = gold 
     return self
 end
 
@@ -41,7 +41,7 @@ local function raiseMAgic(character,value)
 end
 
 function useDefensePotion(character,prompt)
-    if character.def_Raised == 0 then
+    if character.def_raised == 0 then
         local value = 2
         raiseDefense(character,value)
         character.inv.dp = character.inv.dp - 1
@@ -53,7 +53,7 @@ function useDefensePotion(character,prompt)
 end
 
 function useAttackPotion(character,prompt)
-    if character.attack_Raised == 0 then
+    if character.attack_raised == 0 then
         local value = 2
         raiseAttack(character,value)
         character.inv.ap = character.inv.ap - 1
@@ -88,4 +88,52 @@ function makeInventory(h_p_low,h_p_high,gold_low,gold_high,m_p_low,m_p_high,d_p_
     local a_p  = rand(a_p_low,a_p_high)  --attack potion
     return INVENTORY:new(h_p,gold,m_p,d_p,a_p)
 end
+
+local function makeInvList(player)
+    local inv_list = {}
+    local additem  = table.insert
+    if player.inv.hp > 0 then
+        additem(inv_list,{"health",player.inv.hp})
+    end
+    if player.inv.dp > 0 then
+        additem(inv_list,{"defense",player.inv.dp})
+    end
+    if player.inv.mp > 0 then
+        additem(inv_list,{"magic",player.inv.mp})
+    end
+    if player.inv.ap > 0 then
+        additem(inv_list,{"attack",player.inv.ap})
+    end
+    return inv_list
+end
+
+local function playerChoice(inv_list,prompt)
+    local choice = tonumber(mvwgetch(prompt,0 + #inv_list,5))
+    if choice > #inv_list then
+        return "none"
+    end
+    return inv_list[choice][1]
+     
+end
+
+function playerInventory(player,prompt,info)
+    local inv_list = makeInvList(player)
+    printPlayerInventory(inv_list,prompt)
+    local choice = playerChoice(inv_list,prompt)
+    if choice == "magic" then
+        useMagicPotion(player,prompt)
+    elseif choice == "health" then
+        useHealthPotion(player,prompt)
+    elseif choice == "attack" then
+        useAttackPotion(player,prompt)
+    elseif choice == "defense" then
+        useDefensePotion(player,prompt)
+    else
+        return false
+    end
+    updateInfoWin(player,info)
+    return true
+end
+
+
 

@@ -310,3 +310,13 @@ function printMap(map,window)
     end
 end
 
+function printPlayerInventory(inv_list,prompt)
+    wclear(prompt)
+    local print_inv = mvwprintw
+    print_inv(prompt,0,5,"input|potion|total in inv.|")
+    for i=1,#inv_list,1 do
+        print_inv(prompt,i,5,("%d)%s  %d"):format(i,inv_list[i][1],inv_list[i][2]))
+    end
+    wrefresh(prompt)
+end
+

@@ -118,12 +118,16 @@ local function checkForExit(player)
     return false
 end
 
+
+--a bit confusing, need to rework this function
 function playerTurn(player)
     local input     = getch()
     local play      = true
     local new_level = false
     if input == "i" then
-        openInventory(player)
+        if playerInventory(player,ITEMS.prompt,ITEMS.info) == false then
+            return playerTurn(player)
+        end
     elseif input == "q" and confirmChoice(ITEMS.prompt) == true then
         play = false
     elseif checkInput( input) == true then 
