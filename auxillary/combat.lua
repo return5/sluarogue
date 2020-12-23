@@ -308,6 +308,7 @@ local function postCombat(i,player,e_list,window,prompt,rand)
     end
     wclear(window)
     wclear(prompt)
+    wrefresh(prompt)
 end
 
 local function missedTurn(prompt,char)
