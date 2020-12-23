@@ -161,20 +161,20 @@ local function compUseItems(rand,character,prompt)
     return false
 end
 
-local function compAttack(map,comp,player,prompt,rand)
+local function compAttack(map,comp,player,prompt,info,rand)
     local n     = rand(0,10)
     local alive = true
     if n < 5 then
         alive = normalAttack(rand,comp,player,prompt)
     elseif n < 8 then
         if compUseItems(rand,comp,prompt) == false then
-            return compAttack(map,comp,player,prompt,rand)
+            return compAttack(map,comp,player,prompt,info,rand)
         end
     else
         if comp.spec == false then
             alive = useSpecialAttack(comp,player,rand,prompt)
         else
-            return compAttack(map,comp,player,prompt,rand)
+            return compAttack(map,comp,player,prompt,info,rand)
         end
     end
     return alive
@@ -215,7 +215,7 @@ local function runAway(map,player,prompt,rand)
     return not success
 end
 
-local function getPlayerInput(map,player,comp,prompt,rand)
+local function getPlayerInput(map,player,comp,prompt,info,rand)
     printPlayerPrompt(player.name,prompt)
     local alive = true
     input       = tonumber(getch())
@@ -226,14 +226,16 @@ local function getPlayerInput(map,player,comp,prompt,rand)
             alive = useSpecialAttack(player,comp,rand,prompt)
         else
             printMessagePromptWin(prompt,"Sorry, you have already used your special this battle.")
-            return getPlayerInput(map,player,comp,prompt,rand)
+            return getPlayerInput(map,player,comp,prompt,info,rand)
         end
     elseif input == 3 then
-        alive = useItem(player)
+        if playerInventory(player,prompt,info) == false then
+            return getPlayerInput(map,player,comp,prompt,info,rand)
+        end
     elseif input == 4 then
         alive = runAway(map,player,prompt,rand)
     else
-        return getPlayerInput(map,player,comp,prompt,rand)
+        return getPlayerInput(map,player,comp,prompt,info,rand)
     end
     return alive
 end
@@ -314,12 +316,12 @@ local function missedTurn(prompt,char)
     printMessagePromptWin(prompt,str)
 end
 
-local function combatTurn(map,rand,attacker,defender,prompt,charturn,missturn)
+local function combatTurn(map,rand,attacker,defender,prompt,info,charturn,missturn)
     local alive = true
     if attacker.turn > 0 then
         missturn(prompt,attacker)
     else
-        alive = charturn(map,attacker,defender,prompt,rand)
+        alive = charturn(map,attacker,defender,prompt,info,rand)
     end
     return alive
 end
@@ -350,7 +352,7 @@ local function startCombat(i,items)
     printCombatScene(items.window,items.e_list[i].icon)
     updateinfo(items.player,items.info)
     repeat
-        alive = combatturn(items.map,rand,attacker[j],defender[j],items.prompt,funcs[j],missturn)
+        alive = combatturn(items.map,rand,attacker[j],defender[j],items.prompt,items.info,funcs[j],missturn)
         j     = flipj(j)
         updateinfo(items.player,items.info)
     until (alive == false)
