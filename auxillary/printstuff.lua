@@ -1,220 +1,214 @@
 --File contains functions for printing things to the screen
 
 local function printHero(game_win) 
+    local top  = HEIGHT - 8
+    local side = 1
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,11,10,"\\") --sword
-	mvwprintw(game_win,12,11,"\\") --sword
+	mvwprintw(game_win,top + 0,side + 0,"\\") --sword
+	mvwprintw(game_win,top + 1,side + 1,"\\") --sword
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 	wattron(game_win,COLOR_PAIR(COLORS.GREEN))
-	mvwprintw(game_win,12,14,"|") --upper torso
-	mvwprintw(game_win,13,14,"|") --lower torso
+	mvwprintw(game_win,top + 1,side + 4,"|") --upper torso
+	mvwprintw(game_win,top + 2,side + 4,"|") --lower torso
 	wattroff(game_win,COLOR_PAIR(COLORS.GREEN))
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,11,14,"O") --head
-	mvwprintw(game_win,12,12,"__") --arms
-	mvwprintw(game_win,12,15,"__") --arms
-	mvwprintw(game_win,14,13,"/ \\") --legs
-	mvwprintw(game_win,15,12,"/   \\") --lowr legs
+	mvwprintw(game_win,top + 0,side + 4,"O") --head
+	mvwprintw(game_win,top + 1,side + 2,"__") --arms
+	mvwprintw(game_win,top + 1,side + 5,"__") --arms
+	mvwprintw(game_win,top + 3,side + 3,"/ \\") --legs
+	mvwprintw(game_win,top + 4,side + 2,"/   \\") --lowr legs
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattron(game_win,COLOR_PAIR(COLORS.RED))
-	mvwprintw(game_win,12,17,"|") --sheild
-	mvwprintw(game_win,13,17,"|") --sheild
+	mvwprintw(game_win,top + 1,side + 7,"|") --sheild
+	mvwprintw(game_win,top + 2,side + 7,"|") --sheild
 	wattroff(game_win,COLOR_PAIR(COLORS.RED))
 end
 
 local function printSwordsman(game_win) 
+    local top  = HEIGHT - 8
+    local side = 14
 	wattron(game_win,COLOR_PAIR(COLORS.GREEN))
-	mvwprintw(game_win,11,27,"O") --head
-	mvwprintw(game_win,12,25,"__") --left arm
-	mvwprintw(game_win,12,28,"__") --right arm
-	mvwprintw(game_win,14,26,"/ \\ ") --legs
-	mvwprintw(game_win,15,25,"/   \\") --lower legs
+	mvwprintw(game_win,top + 0,side + 3,"O") --head
+	mvwprintw(game_win,top + 1,side + 1,"__") --left arm
+	mvwprintw(game_win,top + 1,side + 4,"__") --right arm
+	mvwprintw(game_win,top + 3,side + 2,"/ \\ ") --legs
+	mvwprintw(game_win,top + 4,side + 1,"/   \\") --lower legs
 	wattroff(game_win,COLOR_PAIR(COLORS.GREEN))
 	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
-	mvwprintw(game_win,12,24,"|") --top of shield
-	mvwprintw(game_win,13,24,"|") --bottom of shield
+	mvwprintw(game_win,top + 1,side + 0,"|") --top of shield
+	mvwprintw(game_win,top + 2,side + 0,"|") --bottom of shield
 	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
 	wattron(game_win,COLOR_PAIR(COLORS.RED))
-	mvwprintw(game_win,12,27,"|") --top of torso
-	mvwprintw(game_win,13,27,"|") --/bottom of torso
+	mvwprintw(game_win,top + 1,side + 3,"|") --top of torso
+	mvwprintw(game_win,top + 2,side + 3,"|") --/bottom of torso
 	wattroff(game_win,COLOR_PAIR(COLORS.RED))
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,11,31,"/") --top of sword
-	mvwprintw(game_win,12,30,"/") --bottom of sword
+	mvwprintw(game_win,top + 0,side + 7,"/") --top of sword
+	mvwprintw(game_win,top + 1,side + 6,"/") --bottom of sword
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 end
 
 local function printRogue(game_win) 
+    local top  = HEIGHT - 8
+    local side = 12
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,11,27,"O") --head
+	mvwprintw(game_win,top + 0,side + 3,"O") --head
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,12,24,"\\") --daggers
-	mvwprintw(game_win,13,30,"\\") --daggers
+	mvwprintw(game_win,top + 1,side + 0,"\\") --daggers
+	mvwprintw(game_win,top + 2,side + 6,"\\") --daggers
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 	wattron(game_win,COLOR_PAIR(COLORS.GREEN))
-	mvwprintw(game_win,12,25,"__|__") --upperbody
-	mvwprintw(game_win,13,27,"|") --lowerbody
-	mvwprintw(game_win,14,25," / \\") --legs
-	mvwprintw(game_win,15,25,"/   \\") --lower legs
+	mvwprintw(game_win,top + 1,side + 1,"__|__") --upperbody
+	mvwprintw(game_win,top + 2,side + 3,"|") --lowerbody
+	mvwprintw(game_win,top + 3,side + 1," / \\") --legs
+	mvwprintw(game_win,top + 4,side + 1,"/   \\") --lower legs
 	wattroff(game_win,COLOR_PAIR(COLORS.GREEN))
 end
 	
 local function printSpearman(game_win) 
+    local top  = HEIGHT - 8
+    local side = 14
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,13,26,"____ _ _ __") --spear
+	mvwprintw(game_win,top + 2,side + 1,"____ _ _ __") --spear
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))	
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,11,32,"O") --head
-	mvwprintw(game_win,12,30,"__|__") --upper torso and arms
-	mvwprintw(game_win,13,25,"_") --spearpoint
-	mvwprintw(game_win,13,32,"|") --lower torso
-	mvwprintw(game_win,13,30,"\\") --hands
-	mvwprintw(game_win,13,34,"/") --other hands
-	mvwprintw(game_win,14,31,"/ \\") --legs
-	mvwprintw(game_win,15,30,"/   \\") --lower legs
+	mvwprintw(game_win,top + 0,side + 7 ,"O") --head
+	mvwprintw(game_win,top + 1,side + 5 ,"__|__") --upper torso and arms
+	mvwprintw(game_win,top + 2,side + 0,"_") --spearpoint
+	mvwprintw(game_win,top + 2,side + 7 ,"|") --lower torso
+	mvwprintw(game_win,top + 2,side + 5 ,"\\") --hands
+	mvwprintw(game_win,top + 2,side + 9,"/") --other hands
+	mvwprintw(game_win,top + 3,side + 6 ,"/ \\") --legs
+	mvwprintw(game_win,top + 4,side + 5 ,"/   \\") --lower legs
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 end
 local function printSkeleton(game_win) 
+    local top  = HEIGHT - 10
+    local side = 13
 	wattron(game_win,COLOR_PAIR(COLORS.CYAN))
-	mvwprintw(game_win,10,26,"|") --sword handle
-	mvwprintw(game_win,11,26,"|") --sword handle
+	mvwprintw(game_win,top + 3,side + 1,"|") --sword handle
+	mvwprintw(game_win,top + 4,side + 1,"|") --sword handle
 	wattroff(game_win,COLOR_PAIR(COLORS.CYAN))
 	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
-	mvwprintw(game_win,10,25,"-") --handgaurd
-	mvwprintw(game_win,10,27,"-") --handgaurd
+	mvwprintw(game_win,top + 3,side + 0,"-") --handgaurd
+	mvwprintw(game_win,top + 3,side + 2,"-") --handgaurd
 	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,7,26,"|") --sword blade
-	mvwprintw(game_win,8,26,"|") --sword blade
-	mvwprintw(game_win,9,26,"|") --sword blade
-	mvwprintw(game_win,10,29,"0") --head
-	mvwprintw(game_win,11,27,"--|") --upper torso and arms
-	mvwprintw(game_win,12,29,"|") --lower torso
-	mvwprintw(game_win,13,28,"/ \\") --leg
-	mvwprintw(game_win,14,27,"/   \\") --lower leg
+	mvwprintw(game_win,top + 0,side + 1    ,"|") --sword blade
+	mvwprintw(game_win,top + 1,side + 1,"|") --sword blade
+	mvwprintw(game_win,top + 2,side + 1,"|") --sword blade
+	mvwprintw(game_win,top + 3,side + 4,"0") --head
+	mvwprintw(game_win,top + 4,side + 2,"--|") --upper torso and arms
+	mvwprintw(game_win,top + 5,side + 4,"|") --lower torso
+	mvwprintw(game_win,top + 6,side + 3,"/ \\") --leg
+	mvwprintw(game_win,top + 7,side + 2,"/   \\") --lower leg
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 end
 
  local function printWolf(game_win) 
+     local top  = HEIGHT - 7
+     local side = 14
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,12,26,"_") --top of head
-	mvwprintw(game_win,13,25,"<") --snout
+	mvwprintw(game_win,top + 0,side + 1,"_") --top of head
+	mvwprintw(game_win,top + 1,side + 0,"<") --snout
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 	wattron(game_win,COLOR_PAIR(COLORS.RED))
-	mvwprintw(game_win,13,26,"=") --eyes?
+	mvwprintw(game_win,top + 1,side + 1,"=") --eyes?
 	wattroff(game_win,COLOR_PAIR(COLORS.RED))	
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,12,27,"/") --ears
-	mvwprintw(game_win,13,27,"\\_______/") --upperbody
-	mvwprintw(game_win,14,28,"/\\    /\\") --upper legs
-	mvwprintw(game_win,15,27,"/  \\  /  \\") --lower legs
+	mvwprintw(game_win,top + 0,side + 2,"/") --ears
+	mvwprintw(game_win,top + 1,side + 2,"\\_______/") --upperbody
+	mvwprintw(game_win,top + 2,side + 3,"/\\    /\\") --upper legs
+	mvwprintw(game_win,top + 3,side + 2,"/  \\  /  \\") --lower legs
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))	
 end
 
 local function printMage(game_win)  
+    local top  = HEIGHT - 8
+    local side = 16
 	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
-	mvwprintw(game_win,11,27,"O") --head
-	mvwprintw(game_win,12,25,"__|__") --upper torso and arms
-	mvwprintw(game_win,13,27,"|") --lower torso
-	mvwprintw(game_win,14,26,"/ \\") --upper legs
-	mvwprintw(game_win,15,25,"/   \\") --lower legs
+	mvwprintw(game_win,top + 0,side + 2,"O") --head
+	mvwprintw(game_win,top + 1,side + 0,"__|__") --upper torso and arms
+	mvwprintw(game_win,top + 2,side + 2,"|") --lower torso
+	mvwprintw(game_win,top + 3,side + 1,"/ \\") --upper legs
+	mvwprintw(game_win,top + 4,side + 0,"/   \\") --lower legs
 	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,12,30,"|") --staff handle
-	mvwprintw(game_win,13,30,"|") --staff handle
-	mvwprintw(game_win,14,30,"|") --staff handle
-	mvwprintw(game_win,15,30,"|") --staff handle
+	mvwprintw(game_win,top + 1,side + 5,"|") --staff handle
+	mvwprintw(game_win,top + 2,side + 5,"|") --staff handle
+	mvwprintw(game_win,top + 3,side + 5,"|") --staff handle
+	mvwprintw(game_win,top + 4,side + 5,"|") --staff handle
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 	wattron(game_win,COLOR_PAIR(COLORS.CYAN))
-	mvwprintw(game_win,11,30,"+") --staff head
+	mvwprintw(game_win,top + 0,side + 5,"+") --staff head
 	wattroff(game_win,COLOR_PAIR(COLORS.CYAN))
 end
 
 local function printFlyingThings(game_win)
+    local top  = HEIGHT - 10
+    local side = 11
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-    mvwprintw(game_win,10,32,'^') --top of head
-    mvwprintw(game_win,11,26,'^') --top of head
-    mvwprintw(game_win,11,37,'^') --top of head
+    mvwprintw(game_win,top + 0,side + 8 ,'^') --top of head
+    mvwprintw(game_win,top + 1,side + 2 ,'^') --top of head
+    mvwprintw(game_win,top + 1,side + 13,'^') --top of head
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
-    mvwprintw(game_win,11,30,"<") --left side of body
-    mvwprintw(game_win,12,24,"<") --left side of body
-    mvwprintw(game_win,12,35,"<") --left side of body
+    mvwprintw(game_win,top + 1,side + 6 ,"<") --left side of body
+    mvwprintw(game_win,top + 2,side + 0 ,"<") --left side of body
+    mvwprintw(game_win,top + 2,side + 11,"<") --left side of body
 	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
 	wattron(game_win,COLOR_PAIR(COLORS.BLUE))
-    mvwprintw(game_win,11,34,">") --right side of body
-    mvwprintw(game_win,12,28,">") --right side of body
-    mvwprintw(game_win,12,39,">") --right side of body
+    mvwprintw(game_win,top + 1,side + 10,">") --right side of body
+    mvwprintw(game_win,top + 2,side + 4 ,">") --right side of body
+    mvwprintw(game_win,top + 2,side + 15,">") --right side of body
 	wattroff(game_win,COLOR_PAIR(COLORS.BLUE))
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-    mvwprintw(game_win,12,32,"v") --bottom of head
-    mvwprintw(game_win,13,26,"v") --bottom of head
-    mvwprintw(game_win,13,37,"v") --bottom of head
+    mvwprintw(game_win,top + 2,side + 8 ,"v") --bottom of head
+    mvwprintw(game_win,top + 3,side + 2 ,"v") --bottom of head
+    mvwprintw(game_win,top + 3,side + 13,"v") --bottom of head
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattron(game_win,COLOR_PAIR(COLORS.RED))
-    mvwprintw(game_win,11,31,"' '") --eyes
-    mvwprintw(game_win,12,25,"' '") --eyes
-    mvwprintw(game_win,12,36,"' '") --eyes
+    mvwprintw(game_win,top + 1,side + 7 ,"' '") --eyes
+    mvwprintw(game_win,top + 2,side + 1 ,"' '") --eyes
+    mvwprintw(game_win,top + 2,side + 12,"' '") --eyes
 	wattroff(game_win,COLOR_PAIR(COLORS.RED))
-    mvwprintw(game_win,12,37,".") --mouth
-    mvwprintw(game_win,12,26,".") --mouth
-    mvwprintw(game_win,11,32,".") --mouth
+    mvwprintw(game_win,top + 2,side + 13,".") --mouth
+    mvwprintw(game_win,top + 2,side + 2 ,".") --mouth
+    mvwprintw(game_win,top + 1,side + 8 ,".") --mouth
 end
 
-local function printMonsterHead(game_win,x) 
+local function printMonsterHead(game_win,top,side) 
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,9,26+x,"(   )") --facce
+	mvwprintw(game_win,top + 0,side + 1,"(   )") --face
 	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
 	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,9,27+x,". .") --eyes
+	mvwprintw(game_win,top + 0,side + 2,". .") --eyes
 	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
 	wattron(game_win,COLOR_PAIR(COLORS.RED))
-	mvwprintw(game_win,9,28+x,"_") --mouth
+	mvwprintw(game_win,top + 0,side + 3,"_") --mouth
 	wattroff(game_win,COLOR_PAIR(COLORS.RED))
 end
 
-local function printMonsterBody(game_win) 
+local function printMonsterBody(game_win,top,side) 
 	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,10,25,"____\\----/____")
-	mvwprintw(game_win,11,29,"|____|")
-	mvwprintw(game_win,12,28,"/      \\")
-	mvwprintw(game_win,13,27,"/        \\")
-	mvwprintw(game_win,14,26,"/          \\")
+	mvwprintw(game_win,top + 1,side + 0,"____\\----/____")
+	mvwprintw(game_win,top + 2,side + 4,"|____|")
+	mvwprintw(game_win,top + 3,side + 3,"/      \\")
+	mvwprintw(game_win,top + 4,side + 2,"/        \\")
+	mvwprintw(game_win,top + 5,side + 1,"/          \\")
     wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
-end
-
-local function printMonsterSeveredHead(game_win,y,x) 
-	wattron(game_win,COLOR_PAIR(COLORS.YELLOW))
-	mvwprintw(game_win,16+y,20+x,"(   )") --severed head face
-	wattroff(game_win,COLOR_PAIR(COLORS.YELLOW))
-	wattron(game_win,COLOR_PAIR(COLORS.WHITE))
-	mvwprintw(game_win,16+y,21+x,". .") --severed head eyes
-	wattroff(game_win,COLOR_PAIR(COLORS.WHITE))
-	wattron(game_win,COLOR_PAIR(COLORS.RED))
-	mvwprintw(game_win,16+y,22+x,"-") --severed head mouth
-	wattroff(game_win,COLOR_PAIR(COLORS.RED))
 end
 
 --two headed monster
 local function printMonster(game_win) 
-	printMonsterHead(game_win,0)
-	printMonsterHead(game_win,7)
-	printMonsterBody(game_win)
-end
-
-local function printMonsterL(game_win) 
-	printMonsterHead(game_win7)
-	printMonsterBody(game_win)
-	printMonsterSeveredHead(game_win,0,0)
-end
-
-local function printMonsterR(game_win) 
-	printMonsterHead(game_win,0)
-	printMonsterBody(game_win)
-	printMonsterSeveredHead(game_win,-1,20)
+    local top  = HEIGHT - 9
+    local side = 14
+	printMonsterHead(game_win,top,side)
+	printMonsterHead(game_win,top,side + 7)
+	printMonsterBody(game_win,top,side)
 end
 
 --when starting combat print the enemy character to the screen based on type
