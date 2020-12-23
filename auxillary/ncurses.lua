@@ -25,6 +25,7 @@ function initColors()
 	init_pair(COLORS.BLUE,COLOR_BLUE,COLOR_BLACK)
 end
 
+--make a new ncurses window and include a border around it
 function makeWindowWithBorder(height,width,y,x)
     local window  = newwin(height,width,y,x)
     local b_win   = newwin(height + 2,width + 2,y - 1, x - 1)
