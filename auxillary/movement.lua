@@ -136,7 +136,7 @@ function playerTurn(player)
             
         end
         if play == true then
-           play = loopEnemyList(checkForEngagement,nil,ITEMS) 
+           play = loopEnemyList(checkForEngagement,ITEMS,nil) 
         end
     else
         return playerTurn(player)
